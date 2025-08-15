@@ -1,0 +1,228 @@
+/**
+ * 타이포그래피 스타일
+ */
+
+/* === 헤딩 스타일 === */
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-4);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+  color: var(--color-primary-accent);
+  text-shadow: 0 0 10px var(--color-primary-accent);
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-secondary-accent);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-medium);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* === 본문 텍스트 === */
+
+p {
+  margin-bottom: var(--spacing-4);
+  line-height: var(--line-height-relaxed);
+}
+
+/* 리드 텍스트 (소개 문단) */
+.lead {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text);
+  margin-bottom: var(--spacing-6);
+}
+
+/* 작은 텍스트 */
+.small, small {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* 극소 텍스트 */
+.xs {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* === 강조 텍스트 === */
+
+strong, b {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+em, i {
+  font-style: italic;
+  color: var(--color-text);
+}
+
+mark {
+  background: linear-gradient(90deg, var(--color-primary-accent), var(--color-secondary-accent));
+  color: var(--color-text-inverse);
+  padding: 0.1em 0.2em;
+  border-radius: var(--radius-sm);
+}
+
+/* === 코드 텍스트 === */
+
+code {
+  font-family: var(--font-family-mono);
+  font-size: 0.875em;
+  background: var(--color-tertiary-bg);
+  color: var(--color-primary-accent);
+  padding: 0.125em 0.375em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+pre {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  background: var(--color-secondary-bg);
+  color: var(--color-text);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-4);
+  line-height: var(--line-height-relaxed);
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* === 텍스트 유틸리티 === */
+
+/* 폰트 크기 */
+.text-xs { font-size: var(--font-size-xs) !important; }
+.text-sm { font-size: var(--font-size-sm) !important; }
+.text-base { font-size: var(--font-size-base) !important; }
+.text-lg { font-size: var(--font-size-lg) !important; }
+.text-xl { font-size: var(--font-size-xl) !important; }
+.text-2xl { font-size: var(--font-size-2xl) !important; }
+.text-3xl { font-size: var(--font-size-3xl) !important; }
+.text-4xl { font-size: var(--font-size-4xl) !important; }
+
+/* 폰트 굵기 */
+.font-light { font-weight: var(--font-weight-light) !important; }
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+
+/* 행간 */
+.leading-tight { line-height: var(--line-height-tight) !important; }
+.leading-normal { line-height: var(--line-height-normal) !important; }
+.leading-relaxed { line-height: var(--line-height-relaxed) !important; }
+
+/* 텍스트 색상 */
+.text-primary { color: var(--color-text) !important; }
+.text-muted { color: var(--color-text-muted) !important; }
+.text-accent { color: var(--color-primary-accent) !important; }
+.text-secondary-accent { color: var(--color-secondary-accent) !important; }
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-error { color: var(--color-error) !important; }
+
+/* 텍스트 변환 */
+.uppercase { text-transform: uppercase !important; }
+.lowercase { text-transform: lowercase !important; }
+.capitalize { text-transform: capitalize !important; }
+
+/* 텍스트 장식 */
+.underline { text-decoration: underline !important; }
+.line-through { text-decoration: line-through !important; }
+.no-underline { text-decoration: none !important; }
+
+/* 텍스트 오버플로우 */
+.truncate {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.text-ellipsis {
+  overflow: hidden !important;
+  display: -webkit-box !important;
+  -webkit-box-orient: vertical !important;
+  -webkit-line-clamp: 2 !important;
+}
+
+/* 줄바꿈 */
+.whitespace-nowrap { white-space: nowrap !important; }
+.whitespace-pre { white-space: pre !important; }
+.whitespace-pre-wrap { white-space: pre-wrap !important; }
+
+/* === 특수 효과 === */
+
+/* 글로우 효과 */
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.text-glow-strong {
+  text-shadow: 0 0 20px currentColor, 0 0 30px currentColor;
+}
+
+/* 그라디언트 텍스트 */
+.text-gradient {
+  background: linear-gradient(90deg, var(--color-primary-accent), var(--color-secondary-accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 애니메이션 */
+.text-shimmer {
+  background: linear-gradient(
+    90deg, 
+    var(--color-text-muted) 25%, 
+    var(--color-text) 50%, 
+    var(--color-text-muted) 75%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
