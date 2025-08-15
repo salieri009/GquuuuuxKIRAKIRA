@@ -21,6 +21,42 @@
     - **Font Size**: 기본 `16px`를 기준으로, `rem` 단위를 사용하여 확장성을 확보.
     - **Font Weight**: `Light (300)`, `Regular (400)`, `Bold (700)` 등 다양한 굵기를 목적에 맞게 사용.
 
+## 2.1. 색상 팔레트 미리보기
+
+| 색상 | 색상코드 | 용도 | 미리보기 |
+|------|----------|------|----------|
+| Primary Background | `#121212` | 메인 배경 | ![#121212](https://via.placeholder.com/50x30/121212/121212.png) |
+| Secondary Background | `#1E1E1E` | 패널, 모달 배경 | ![#1E1E1E](https://via.placeholder.com/50x30/1E1E1E/1E1E1E.png) |
+| Primary Accent | `#00FFFF` | 버튼, 링크, 활성 요소 | ![#00FFFF](https://via.placeholder.com/50x30/00FFFF/00FFFF.png) |
+| Secondary Accent | `#FF00FF` | 보조 강조, 특정 효과 | ![#FF00FF](https://via.placeholder.com/50x30/FF00FF/FF00FF.png) |
+| Text Color | `#E0E0E0` | 기본 텍스트 | ![#E0E0E0](https://via.placeholder.com/50x30/E0E0E0/E0E0E0.png) |
+| Text Muted | `#888888` | 보조 텍스트 | ![#888888](https://via.placeholder.com/50x30/888888/888888.png) |
+
+## 2.2. 타이포그래피 미리보기
+
+### 헤딩 스타일
+```
+# H1 - Kirakira Main Title (2.5rem, Bold 700, Primary Accent)
+## H2 - Section Title (2rem, Regular 400, Text Color)
+### H3 - Subsection Title (1.5rem, Light 300, Secondary Accent)
+```
+
+### 본문 텍스트
+```
+일반 본문 텍스트 (1rem, Regular 400, Text Color)
+건담 시리즈의 다양한 시각 효과를 Three.js로 구현한 인터랙티브 웹사이트입니다.
+
+보조 설명 텍스트 (0.875rem, Light 300, Text Muted)
+효과의 파라미터를 실시간으로 조절하며 건담 세계관을 경험해보세요.
+```
+
+### UI 요소 텍스트
+```
+[버튼 텍스트] - Bold 700, Primary/Secondary Background
+링크 텍스트 - Regular 400, Primary Accent, 호버 시 밝기 증가
+레이블 텍스트 - Regular 400, Text Color
+```
+
 ## 3. CSS 방법론
 
 - **Scoped CSS**: Vue SFC의 `<style scoped>`를 사용하여 컴포넌트별 스타일을 캡슐화하는 것을 기본으로 함.
