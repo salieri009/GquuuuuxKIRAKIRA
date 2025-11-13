@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { devtools, subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import type { Effect, EffectParameter, LoadingStatus } from '../types';
+import { validateParam } from '../utils/validation';
+import { withRetry, logError } from '../utils/errorHandler';
+import { fetchEffects } from '../services/effectService';
 
 interface EffectState {
   // State
@@ -11,6 +14,9 @@ interface EffectState {
   status: LoadingStatus;
   error: string | null;
   lastFetchTime: number;
+  progress: number; // 0-100
+  recentEffects: string[]; // 최근 사용한 효과 ID 목록 (최대 5개)
+  favorites: string[]; // 즐겨찾기 효과 ID 목록
 
   // Getters
   isLoading: () => boolean;
@@ -19,6 +25,9 @@ interface EffectState {
   selectedParams: () => Record<string, any>;
   getEffectById: (id: string) => Effect | undefined;
   getEffectsByCategory: (category: string) => Effect[];
+  getRecentEffects: () => Effect[];
+  getFavoriteEffects: () => Effect[];
+  isFavorite: (effectId: string) => boolean;
 
   // Actions
   fetchEffects: () => Promise<void>;
@@ -27,6 +36,8 @@ interface EffectState {
   updateParams: (params: Record<string, any>) => void;
   resetParams: () => void;
   resetStore: () => void;
+  toggleFavorite: (effectId: string) => void;
+  clearRecentEffects: () => void;
 }
 
 const initialState = {
@@ -36,6 +47,9 @@ const initialState = {
   status: 'idle' as LoadingStatus,
   error: null,
   lastFetchTime: 0,
+  progress: 0,
+  recentEffects: [] as string[],
+  favorites: JSON.parse(localStorage.getItem('kirakira-favorites') || '[]') as string[],
 };
 
 export const useEffectStore = create<EffectState>()(
@@ -43,6 +57,7 @@ export const useEffectStore = create<EffectState>()(
     subscribeWithSelector(
       immer((set, get) => ({
         ...initialState,
+        favorites: JSON.parse(localStorage.getItem('kirakira-favorites') || '[]') as string[],
 
         // Getters
         isLoading: () => get().status === 'loading',
@@ -68,6 +83,24 @@ export const useEffectStore = create<EffectState>()(
           return get().effects.filter(effect => effect.category === category);
         },
 
+        getRecentEffects: () => {
+          const state = get();
+          return state.recentEffects
+            .map(id => state.effects.find(e => e.id === id))
+            .filter((e): e is Effect => e !== undefined);
+        },
+
+        getFavoriteEffects: () => {
+          const state = get();
+          return state.favorites
+            .map(id => state.effects.find(e => e.id === id))
+            .filter((e): e is Effect => e !== undefined);
+        },
+
+        isFavorite: (effectId: string) => {
+          return get().favorites.includes(effectId);
+        },
+
         // Actions
         fetchEffects: async () => {
           const state = get();
@@ -84,80 +117,61 @@ export const useEffectStore = create<EffectState>()(
           set((draft) => {
             draft.status = 'loading';
             draft.error = null;
+            draft.progress = 0;
           });
 
           try {
-            // Mock 데이터 시뮬레이션
-            await new Promise(resolve => setTimeout(resolve, 800));
-            
-            const mockEffects: Effect[] = [
-              {
-                id: 'gnParticles',
-                name: 'GN 입자',
-                description: 'GN 드라이브에서 방출되는 고에너지 입자들이 만들어내는 환상적인 빛의 향연',
-                thumbnail: '/images/effects/gn-particles-thumb.jpg',
-                relatedGundam: ['가넷 건담', '엑시아', '더블오', '큐안타'],
-                category: 'particles',
-                defaultParams: {
-                  particleCount: { type: 'slider', value: 2000, min: 500, max: 5000, step: 100 },
-                  particleSize: { type: 'slider', value: 0.08, min: 0.02, max: 0.15, step: 0.01 },
-                  speed: { type: 'slider', value: 1.5, min: 0.5, max: 3.0, step: 0.1 },
-                  spread: { type: 'slider', value: 8.0, min: 2.0, max: 15.0, step: 0.5 },
-                  color: { type: 'color', value: '#00FF88' },
-                  glowIntensity: { type: 'slider', value: 1.2, min: 0.5, max: 2.5, step: 0.1 }
+            // 진행률 시뮬레이션
+            const progressInterval = setInterval(() => {
+              set((draft) => {
+                if (draft.progress < 90) {
+                  draft.progress += 10;
                 }
+              });
+            }, 100);
+
+            const effects = await withRetry(
+              async () => {
+                const result = await fetchEffects();
+                clearInterval(progressInterval);
+                set((draft) => {
+                  draft.progress = 100;
+                });
+                return result;
               },
               {
-                id: 'newtypeFlash',
-                name: '뉴타입 섬광',
-                description: '뉴타입의 정신적 각성 순간에 발생하는 강렬한 금색 섬광과 충격파',
-                thumbnail: '/images/effects/newtype-flash-thumb.jpg',
-                relatedGundam: ['뉴 건담', '유니콘 건담', '바나지', '아무로'],
-                category: 'energy',
-                defaultParams: {
-                  intensity: { type: 'slider', value: 1.5, min: 0.5, max: 3.0, step: 0.1 },
-                  flashSpeed: { type: 'slider', value: 2.0, min: 0.5, max: 5.0, step: 0.1 },
-                  waveCount: { type: 'slider', value: 3, min: 1, max: 8, step: 1 },
-                  color: { type: 'color', value: '#FFD700' },
-                  pulseRate: { type: 'slider', value: 1.2, min: 0.3, max: 3.0, step: 0.1 }
-                }
-              },
-              {
-                id: 'minofskyParticles',
-                name: '미노프스키 입자',
-                description: 'MS의 핵융합 반응에서 생성되는 미노프스키 입자의 전자기 간섭 효과',
-                thumbnail: '/images/effects/minofsky-particles-thumb.jpg',
-                relatedGundam: ['건담', '자쿠', '겔구그', '모든 MS'],
-                category: 'particles',
-                defaultParams: {
-                  particleCount: { type: 'slider', value: 1500, min: 300, max: 4000, step: 100 },
-                  particleSize: { type: 'slider', value: 0.06, min: 0.01, max: 0.12, step: 0.01 },
-                  speed: { type: 'slider', value: 1.0, min: 0.3, max: 2.5, step: 0.1 },
-                  color: { type: 'color', value: '#FF6B35' },
-                  interference: { type: 'slider', value: 0.7, min: 0.0, max: 2.0, step: 0.1 }
-                }
+                maxRetries: 3,
+                delay: 1000,
+                onRetry: (attempt, error) => {
+                  console.warn(`효과 로드 재시도 ${attempt}/3:`, error.message);
+                },
               }
-            ];
+            );
 
             set((draft) => {
-              draft.effects = mockEffects;
+              draft.effects = effects;
               draft.status = 'succeeded';
               draft.lastFetchTime = Date.now();
+              draft.progress = 100;
               
               // 첫 번째 효과를 기본 선택 (선택된 효과가 없을 때만)
-              if (!draft.selectedEffect && mockEffects.length > 0) {
-                draft.selectedEffect = mockEffects[0];
-                draft.currentParams = { ...mockEffects[0].defaultParams };
+              if (!draft.selectedEffect && effects.length > 0) {
+                draft.selectedEffect = effects[0];
+                draft.currentParams = { ...effects[0].defaultParams };
               }
             });
 
             console.log('효과 목록 로드 완료');
             
           } catch (error) {
-            console.error('효과 목록 로드 실패:', error);
+            clearInterval(progressInterval);
+            const appError = error instanceof Error ? error : new Error(String(error));
+            logError(appError, { context: 'fetchEffects' });
+            
             set((draft) => {
               draft.status = 'failed';
-              draft.error = error instanceof Error ? error.message : '효과 목록을 불러오는데 실패했습니다.';
+              draft.error = appError.message;
+              draft.progress = 0;
             });
           }
         },
@@ -179,6 +193,18 @@ export const useEffectStore = create<EffectState>()(
           set((draft) => {
             draft.selectedEffect = effect;
             draft.currentParams = { ...effect.defaultParams };
+            
+            // 최근 사용 효과에 추가 (중복 제거, 최대 5개)
+            if (!draft.recentEffects.includes(effectId)) {
+              draft.recentEffects.unshift(effectId);
+              draft.recentEffects = draft.recentEffects.slice(0, 5);
+            } else {
+              // 이미 있으면 맨 앞으로 이동
+              draft.recentEffects = [
+                effectId,
+                ...draft.recentEffects.filter(id => id !== effectId)
+              ].slice(0, 5);
+            }
           });
           
           console.log(`효과 선택됨: ${effect.name}`);
@@ -197,29 +223,16 @@ export const useEffectStore = create<EffectState>()(
             return;
           }
 
-          set((draft) => {
-            const param = draft.currentParams[key];
-            
-            // 값 검증 및 정규화
-            let normalizedValue = value;
-            
-            if (param.type === 'slider') {
-              normalizedValue = Math.max(param.min || 0, Math.min(param.max || 100, Number(value)));
-            } else if (param.type === 'color') {
-              // 색상 값 검증 (헥스 코드 형식)
-              if (!/^#[0-9A-F]{6}$/i.test(value)) {
-                console.warn(`잘못된 색상 형식: ${value}`);
-                return;
-              }
-            } else if (param.type === 'toggle') {
-              normalizedValue = Boolean(value);
-            }
+          const param = state.currentParams[key];
+          const validation = validateParam(key, value, param);
+          
+          if (!validation.valid) {
+            console.warn(`파라미터 검증 실패: ${validation.error}`);
+            return;
+          }
 
-            // 값이 실제로 변경된 경우만 업데이트
-            if (param.value !== normalizedValue) {
-              draft.currentParams[key].value = normalizedValue;
-              console.log(`파라미터 업데이트: ${key} = ${normalizedValue}`);
-            }
+          set((draft) => {
+            draft.currentParams[key].value = validation.normalizedValue;
           });
         },
 
@@ -247,6 +260,26 @@ export const useEffectStore = create<EffectState>()(
           console.log('파라미터가 기본값으로 리셋되었습니다.');
         },
 
+        toggleFavorite: (effectId: string) => {
+          set((draft) => {
+            const index = draft.favorites.indexOf(effectId);
+            if (index > -1) {
+              draft.favorites.splice(index, 1);
+            } else {
+              draft.favorites.push(effectId);
+            }
+            
+            // localStorage에 저장
+            localStorage.setItem('kirakira-favorites', JSON.stringify(draft.favorites));
+          });
+        },
+
+        clearRecentEffects: () => {
+          set((draft) => {
+            draft.recentEffects = [];
+          });
+        },
+
         resetStore: () => {
           set((draft) => {
             Object.assign(draft, initialState);
@@ -261,18 +294,11 @@ export const useEffectStore = create<EffectState>()(
 );
 
 // 스토어 구독자 설정 (디버깅용)
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   useEffectStore.subscribe(
     (state) => state.selectedEffect,
     (selectedEffect) => {
       console.log('Selected effect changed:', selectedEffect?.name || 'None');
-    }
-  );
-
-  useEffectStore.subscribe(
-    (state) => state.status,
-    (status) => {
-      console.log('Effect store status changed:', status);
     }
   );
 }

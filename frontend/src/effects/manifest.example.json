@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "effects": [
+    {
+      "id": "gnParticles",
+      "name": "GN 입자",
+      "description": "GN 드라이브에서 방출되는 고에너지 입자 효과",
+      "version": "1.0.0",
+      "category": "particles",
+      "tags": ["gundam-00", "gn-drive", "particles"],
+      "performance": "medium",
+      "thumbnail": "/images/effects/gn-particles-thumb.jpg",
+      "path": "/effects/gnParticles"
+    },
+    {
+      "id": "newtypeFlash",
+      "name": "뉴타입 섬광",
+      "description": "뉴타입의 정신적 각성 순간에 발생하는 강렬한 금색 섬광",
+      "version": "1.0.0",
+      "category": "energy",
+      "tags": ["newtype", "flash", "psychic"],
+      "performance": "high",
+      "thumbnail": "/images/effects/newtype-flash-thumb.jpg",
+      "path": "/effects/newtypeFlash"
+    }
+  ]
+}
+

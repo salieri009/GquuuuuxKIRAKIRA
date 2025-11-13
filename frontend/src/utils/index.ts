@@ -293,7 +293,7 @@ export function measurePerformance<T>(
   const result = fn();
   const duration = performance.now() - start;
   
-  if (label && process.env.NODE_ENV === 'development') {
+  if (label && import.meta.env.DEV) {
     console.log(`Performance [${label}]: ${duration.toFixed(2)}ms`);
   }
   

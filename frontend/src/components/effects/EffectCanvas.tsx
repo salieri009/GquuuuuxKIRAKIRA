@@ -2,13 +2,89 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Stars } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import { useEffect as useEffectContext } from '../../contexts/EffectContext';
-import { loadEffectModule } from '../../services/effectService';
+import { useEffectStore } from '../../store/effectStore';
+import { EffectService } from '../../services/effectService';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import ProgressBar from '../ui/ProgressBar';
+import { getUserFriendlyMessage } from '../../utils/errorHandler';
+import { useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 
-function Scene() {
-  const { state } = useEffectContext();
-  
+// 효과 렌더링 컴포넌트
+function EffectRenderer() {
+  const { selectedEffect, currentParams } = useEffectStore();
+  const effectRef = useRef<{ module: any; objects: any } | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+
+  useEffect(() => {
+    if (!selectedEffect) return;
+
+    let mounted = true;
+    let retryTimeout: NodeJS.Timeout | null = null;
+
+    const loadEffect = async () => {
+      try {
+        const { module } = await EffectService.loadEffectModule(selectedEffect.id);
+        
+        if (!mounted) return;
+
+        // Scene 가져오기 (useThree hook 사용)
+        const scene = sceneRef.current;
+        if (!scene) {
+          console.warn('Scene not available yet, retrying...');
+          retryTimeout = setTimeout(loadEffect, 100);
+          return;
+        }
+
+        // 기존 효과 정리
+        if (effectRef.current) {
+          effectRef.current.module.dispose(scene, effectRef.current.objects);
+        }
+
+        // 새 효과 초기화
+        const params = Object.fromEntries(
+          Object.entries(currentParams).map(([key, param]) => [key, param.value])
+        );
+        const objects = module.init(scene, params);
+
+        effectRef.current = { module, objects };
+      } catch (error) {
+        console.error('Effect load error:', error);
+      }
+    };
+
+    loadEffect();
+
+    return () => {
+      mounted = false;
+      if (retryTimeout) {
+        clearTimeout(retryTimeout);
+      }
+      if (effectRef.current && sceneRef.current) {
+        effectRef.current.module.dispose(sceneRef.current, effectRef.current.objects);
+        effectRef.current = null;
+      }
+    };
+  }, [selectedEffect?.id, currentParams]); // currentParams 추가: 파라미터 변경 시 재초기화
+
+  // 애니메이션 루프
+  const clock = useRef(new THREE.Clock());
+  useFrame((state) => {
+    // Scene 참조 저장
+    if (!sceneRef.current) {
+      sceneRef.current = state.scene;
+    }
+
+    if (!effectRef.current || !selectedEffect) return;
+
+    const deltaTime = clock.current.getDelta();
+    const params = Object.fromEntries(
+      Object.entries(currentParams).map(([key, param]) => [key, param.value])
+    );
+
+    effectRef.current.module.update(effectRef.current.objects, params, deltaTime);
+  });
+
   return (
     <>
       <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
@@ -23,42 +99,40 @@ function Scene() {
       />
       <ambientLight intensity={0.5} />
       <pointLight position={[10, 10, 10]} />
-      
-      {/* Effect placeholder - would contain actual 3D effect */}
-      <mesh>
-        <sphereGeometry args={[1, 32, 32]} />
-        <meshStandardMaterial 
-          color={state.currentParams.color || '#00FFFF'} 
-          transparent 
-          opacity={0.7}
-          emissive={state.currentParams.color || '#00FFFF'}
-          emissiveIntensity={0.2}
-        />
-      </mesh>
     </>
   );
 }
 
 export default function EffectCanvas() {
-  const { state } = useEffectContext();
+  const { selectedEffect, status, progress, error } = useEffectStore();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (state.selectedEffect) {
+    if (selectedEffect && status === 'loading') {
       setIsLoading(true);
-      setError(null);
-      
-      loadEffectModule(state.selectedEffect.id)
-        .then(() => {
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          setError(err.message);
-          setIsLoading(false);
-        });
+      setLoadError(null);
+    } else if (status === 'succeeded') {
+      setIsLoading(false);
+    } else if (status === 'failed') {
+      setIsLoading(false);
+      setLoadError(error || '효과를 로드할 수 없습니다.');
     }
-  }, [state.selectedEffect]);
+  }, [selectedEffect, status, error]);
+
+  const handleRetry = async () => {
+    if (selectedEffect) {
+      setLoadError(null);
+      setIsLoading(true);
+      try {
+        await EffectService.loadEffectModule(selectedEffect.id);
+        setIsLoading(false);
+      } catch (err) {
+        setLoadError(getUserFriendlyMessage(err instanceof Error ? err : new Error(String(err))));
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
     <motion.div 
@@ -68,28 +142,26 @@ export default function EffectCanvas() {
       transition={{ duration: 0.5 }}
     >
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-primary-bg bg-opacity-80 z-10">
-          <div className="text-center">
-            <LoadingSpinner size="lg" />
-            <p className="mt-md text-sm text-muted">
-              Loading {state.selectedEffect?.name}...
-            </p>
-          </div>
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-primary-bg bg-opacity-90 z-10">
+          <LoadingSpinner size="lg" />
+          <p className="mt-md text-sm text-muted">
+            {selectedEffect ? `Loading ${selectedEffect.name}...` : 'Loading effect...'}
+          </p>
+          {progress > 0 && progress < 100 && (
+            <div className="mt-md w-64">
+              <ProgressBar progress={progress} showPercentage />
+            </div>
+          )}
         </div>
       )}
 
-      {error && (
-        <div className="absolute inset-0 flex items-center justify-center bg-primary-bg bg-opacity-80 z-10">
-          <div className="text-center">
-            <p className="text-danger">Error: {error}</p>
+      {loadError && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-primary-bg bg-opacity-90 z-10">
+          <div className="text-center max-w-md">
+            <p className="text-danger mb-md">{loadError}</p>
             <button 
-              className="neon-button mt-md"
-              onClick={() => {
-                setError(null);
-                if (state.selectedEffect) {
-                  loadEffectModule(state.selectedEffect.id);
-                }
-              }}
+              className="neon-button"
+              onClick={handleRetry}
             >
               Retry
             </button>
@@ -100,17 +172,20 @@ export default function EffectCanvas() {
       <Canvas
         camera={{ position: [0, 0, 5] }}
         style={{ background: 'transparent' }}
+        onCreated={({ scene }) => {
+          // Scene 참조 저장 (EffectRenderer에서 사용)
+        }}
       >
-        <Scene />
+        <EffectRenderer />
       </Canvas>
 
-      {state.selectedEffect && (
+      {selectedEffect && !isLoading && !loadError && (
         <div className="absolute bottom-4 left-4 glass-panel p-sm">
           <h3 className="text-sm font-bold text-accent">
-            {state.selectedEffect.name}
+            {selectedEffect.name}
           </h3>
           <p className="text-xs text-muted mt-xs">
-            {state.selectedEffect.relatedGundam.join(', ')}
+            {selectedEffect.relatedGundam.join(', ')}
           </p>
         </div>
       )}

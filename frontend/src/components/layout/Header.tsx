@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, Info, Menu, X, Palette, Zap, Monitor, Maximize2 } from 'lucide-react';
+import { Settings, Info, Menu, X, Palette, Zap, Monitor, Maximize2, HelpCircle, Bookmark, Wifi, WifiOff } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useEffectStore } from '../../store/effectStore';
+import { useNetworkStatus } from '../../utils/networkStatus';
 import Button from '../ui/Button';
 import { cn } from '../../utils';
 
@@ -21,9 +22,11 @@ export default function Header() {
     setGlowEffects,
     toggleFullscreen,
     initializeUI,
+    openModal,
   } = useUIStore();
 
   const { fetchEffects, isLoading } = useEffectStore();
+  const networkStatus = useNetworkStatus();
 
   useEffect(() => {
     // UI 초기화
@@ -95,18 +98,35 @@ export default function Header() {
           </div>
         </motion.div>
 
-        {/* 중앙 상태 표시 */}
-        <div className="hidden md:flex items-center gap-2 text-xs text-text-muted">
-          <div className="flex items-center gap-1">
-            <div className={cn(
-              'w-2 h-2 rounded-full',
-              isLoading ? 'bg-warning animate-pulse' : 'bg-success'
-            )} />
-            <span>
-              {isLoading ? '로딩 중...' : '준비됨'}
-            </span>
-          </div>
-        </div>
+              {/* 중앙 상태 표시 */}
+              <div className="hidden md:flex items-center gap-2 text-xs text-text-muted">
+                <div className="flex items-center gap-1">
+                  <div className={cn(
+                    'w-2 h-2 rounded-full',
+                    isLoading ? 'bg-warning animate-pulse' : 'bg-success'
+                  )} />
+                  <span>
+                    {isLoading ? '로딩 중...' : '준비됨'}
+                  </span>
+                </div>
+                
+                {/* 네트워크 상태 표시 */}
+                <div className="flex items-center gap-1 ml-2">
+                  {networkStatus.online ? (
+                    <>
+                      <Wifi size={14} className="text-success" />
+                      <span className="hidden lg:inline">
+                        {networkStatus.effectiveType || '온라인'}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <WifiOff size={14} className="text-danger" />
+                      <span className="hidden lg:inline">오프라인</span>
+                    </>
+                  )}
+                </div>
+              </div>
 
         {/* 우측 액션 버튼들 */}
         <div className="flex items-center gap-2">
@@ -144,6 +164,26 @@ export default function Header() {
               title="컨트롤 (Ctrl+K)"
             >
               <span className="hidden lg:inline">컨트롤</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => openModal('help')}
+              leftIcon={<HelpCircle size={16} />}
+              title="도움말"
+            >
+              <span className="hidden lg:inline">도움말</span>
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => openModal('presets')}
+              leftIcon={<Bookmark size={16} />}
+              title="프리셋 관리"
+            >
+              <span className="hidden lg:inline">프리셋</span>
             </Button>
           </div>
 

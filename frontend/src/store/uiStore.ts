@@ -374,7 +374,7 @@ export const useUIStore = create<UIStoreState>()(
 );
 
 // 스토어 구독자 설정 (디버깅용)
-if (process.env.NODE_ENV === 'development') {
+if (import.meta.env.DEV) {
   useUIStore.subscribe(
     (state) => state.theme,
     (theme) => {
