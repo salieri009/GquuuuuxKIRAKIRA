@@ -1,0 +1,80 @@
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+  color: var(--color-text-primary);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary-accent);
+  font-weight: var(--font-weight-light);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-primary);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+/* Body text */
+p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.text-accent {
+  color: var(--color-text-accent);
+}
+
+.text-secondary-accent {
+  color: var(--color-secondary-accent);
+}
+
+/* Links */
+a {
+  color: var(--color-primary-accent);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-secondary-accent);
+  text-shadow: var(--shadow-neon-magenta);
+}
+
+/* Labels and small text */
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

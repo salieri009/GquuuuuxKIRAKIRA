@@ -1,0 +1,215 @@
+/**
+ * 기본 스타일 및 CSS 리셋
+ */
+
+/* === 폰트 로딩 === */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Roboto+Mono:wght@400;500;700&display=swap');
+
+/* === CSS 리셋 === */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* 브라우저 기본 폰트 크기 기준으로 rem 계산 */
+  font-size: 16px;
+  
+  /* 부드러운 스크롤 */
+  scroll-behavior: smooth;
+  
+  /* iOS 터치 하이라이트 제거 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--color-text);
+  background-color: var(--color-primary-bg);
+  
+  /* 폰트 렌더링 최적화 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  /* 텍스트 렌더링 최적화 */
+  text-rendering: optimizeLegibility;
+  
+  /* 오버플로우 처리 */
+  overflow-x: hidden;
+}
+
+/* === 기본 요소 스타일 === */
+
+/* 링크 */
+a {
+  color: var(--color-primary-accent);
+  text-decoration: none;
+  transition: color var(--duration-normal) var(--easing-ease-out);
+}
+
+a:hover {
+  color: var(--color-primary-accent);
+  opacity: var(--opacity-hover);
+}
+
+a:focus {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* 버튼 */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  transition: all var(--duration-normal) var(--easing-ease-out);
+}
+
+button:disabled {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+}
+
+/* 입력 요소 */
+input,
+textarea,
+select {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  transition: border-color var(--duration-normal) var(--easing-ease-out);
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 2px rgba(0, 255, 255, 0.2);
+}
+
+/* 이미지 */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* 목록 */
+ul,
+ol {
+  list-style: none;
+}
+
+/* 테이블 */
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* === 스크롤바 커스터마이징 === */
+
+/* Webkit 브라우저 (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-accent);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-secondary-bg);
+}
+
+/* === 선택 영역 스타일 === */
+
+::selection {
+  background: var(--color-primary-accent);
+  color: var(--color-text-inverse);
+}
+
+::-moz-selection {
+  background: var(--color-primary-accent);
+  color: var(--color-text-inverse);
+}
+
+/* === 포커스 스타일 === */
+
+:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* === 숨김 요소 === */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* === 유틸리티 클래스 === */
+
+/* 디스플레이 */
+.hidden { display: none !important; }
+.block { display: block !important; }
+.inline { display: inline !important; }
+.inline-block { display: inline-block !important; }
+.flex { display: flex !important; }
+.inline-flex { display: inline-flex !important; }
+.grid { display: grid !important; }
+
+/* 가시성 */
+.invisible { visibility: hidden !important; }
+.visible { visibility: visible !important; }
+
+/* 포지션 */
+.relative { position: relative !important; }
+.absolute { position: absolute !important; }
+.fixed { position: fixed !important; }
+.sticky { position: sticky !important; }
+
+/* 텍스트 정렬 */
+.text-left { text-align: left !important; }
+.text-center { text-align: center !important; }
+.text-right { text-align: right !important; }
+
+/* 포인터 이벤트 */
+.pointer-events-none { pointer-events: none !important; }
+.pointer-events-auto { pointer-events: auto !important; }
+
+/* 사용자 선택 */
+.select-none { user-select: none !important; }
+.select-all { user-select: all !important; }
+.select-auto { user-select: auto !important; }
