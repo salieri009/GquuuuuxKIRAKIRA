@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Star, Clock, X, Filter } from 'lucide-react';
 import { useEffectStore } from '../../store/effectStore';

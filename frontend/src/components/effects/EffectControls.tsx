@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { RotateCcw, Save, Share, AlertCircle } from 'lucide-react';
 import { useEffectStore } from '../../store/effectStore';
@@ -21,7 +21,7 @@ export default function EffectControls() {
     );
   }
 
-  const handleParamChange = (key: string, value: any) => {
+  const handleParamChange = useCallback((key: string, value: any) => {
     const param = currentParams[key];
     if (!param) return;
 
@@ -48,13 +48,13 @@ export default function EffectControls() {
     });
   };
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     if (window.confirm('모든 설정을 기본값으로 되돌리시겠습니까?')) {
       resetParams();
       setValidationErrors({});
       showToast('파라미터가 기본값으로 리셋되었습니다.', 'success');
     }
-  };
+  }, [resetParams, showToast]);
 
   const handleSave = () => {
     openModal('presets');

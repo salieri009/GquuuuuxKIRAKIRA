@@ -237,9 +237,24 @@ export const useEffectStore = create<EffectState>()(
         },
 
         updateParams: (params: Record<string, any>) => {
-          const { updateParam } = get();
-          Object.keys(params).forEach(key => {
-            updateParam(key, params[key]);
+          const state = get();
+          
+          if (!state.selectedEffect) {
+            console.warn('선택된 효과가 없습니다.');
+            return;
+          }
+
+          // 일괄 업데이트로 성능 최적화
+          set((draft) => {
+            Object.keys(params).forEach(key => {
+              if (key in draft.currentParams) {
+                const param = draft.currentParams[key];
+                const validation = validateParam(key, params[key], param);
+                if (validation.valid) {
+                  draft.currentParams[key].value = validation.normalizedValue;
+                }
+              }
+            });
           });
         },
 
