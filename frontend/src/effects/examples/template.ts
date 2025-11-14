@@ -9,10 +9,24 @@
  * 2. 클래스 이름과 메타데이터를 수정
  * 3. init, update, dispose 메서드를 구현
  * 4. 효과를 테스트하고 배포
+ * 
+ * ⚠️ 중요: Loose Coupling을 위해 타입을 직접 정의할 수 있습니다.
+ * 메인 프로젝트의 타입을 import하지 않아도 됩니다.
  */
 
 import * as THREE from 'three';
-import type { EffectModule, EffectObjects } from '../types';
+
+// 타입 정의 (메인 프로젝트 의존성 없음)
+// 또는 메인 프로젝트에서 types-standalone.d.ts를 복사하여 사용
+interface EffectObjects {
+  [key: string]: THREE.Object3D | THREE.Material | THREE.Geometry | THREE.Texture | any;
+}
+
+interface EffectModule {
+  init: (scene: THREE.Scene, params: Record<string, any>) => EffectObjects;
+  update: (objects: EffectObjects, params: Record<string, any>, deltaTime: number) => void;
+  dispose: (scene: THREE.Scene, objects: EffectObjects) => void;
+}
 
 /**
  * 효과 클래스

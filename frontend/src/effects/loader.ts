@@ -69,18 +69,44 @@ export class EffectLoader {
         );
       }
 
-      // 모듈 검증
-      if (!effectModule.default || typeof effectModule.default.init !== 'function') {
+      // 모듈 검증 (런타임 인터페이스 검증 - Loose Coupling)
+      // 효과 개발자가 타입을 import하지 않아도 됨
+      if (!effectModule.default) {
         throw new Error(
           `Invalid effect module: ${effectId}. ` +
-          `Module must export a default object with init, update (or animate), and dispose methods.`
+          `Module must export a default object.`
         );
       }
 
+      const effect = effectModule.default;
+      
+      // 인터페이스 메서드 검증
+      if (typeof effect.init !== 'function') {
+        throw new Error(
+          `Invalid effect module: ${effectId}. ` +
+          `Module must have an 'init' method: (scene: THREE.Scene, params: Record<string, any>) => EffectObjects`
+        );
+      }
+
+      if (typeof effect.update !== 'function' && typeof effect.animate !== 'function') {
+        throw new Error(
+          `Invalid effect module: ${effectId}. ` +
+          `Module must have either 'update' or 'animate' method: (objects, params, deltaTime) => void`
+        );
+      }
+
+      if (typeof effect.dispose !== 'function') {
+        throw new Error(
+          `Invalid effect module: ${effectId}. ` +
+          `Module must have a 'dispose' method: (scene: THREE.Scene, objects) => void`
+        );
+      }
+
+      // 인터페이스에 맞게 래핑 (타입 안정성 확보)
       const module: EffectModule = {
-        init: effectModule.default.init,
-        update: effectModule.default.update || effectModule.default.animate,
-        dispose: effectModule.default.dispose,
+        init: effect.init,
+        update: effect.update || effect.animate,
+        dispose: effect.dispose,
       };
 
       const metadata: EffectMetadata | undefined = effectModule.metadata || effectModule.default.metadata;
