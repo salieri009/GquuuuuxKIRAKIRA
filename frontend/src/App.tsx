@@ -1,6 +1,5 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { EffectProvider } from './contexts/EffectContext';
 import { UIProvider } from './contexts/UIContext';
 import { useEffectLoader } from './hooks/useEffectLoader';
 import { useResponsive } from './hooks/useResponsive';
@@ -118,9 +117,7 @@ function AppContent() {
 function App() {
   return (
     <UIProvider>
-      <EffectProvider>
-        <AppContent />
-      </EffectProvider>
+      <AppContent />
     </UIProvider>
   );
 }

@@ -1,117 +1,71 @@
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+/**
+ * @deprecated EffectContext는 더 이상 사용되지 않습니다.
+ * 대신 useEffectStore를 사용하세요.
+ * 
+ * 마이그레이션 가이드:
+ * - useEffect() -> useEffectStore()
+ * - EffectProvider는 제거되었습니다 (더 이상 필요 없음)
+ * 
+ * 이 파일은 하위 호환성을 위해 유지되지만, 새로운 코드에서는 사용하지 마세요.
+ */
 
-interface Effect {
-  id: string;
-  name: string;
-  description: string;
-  thumbnail: string;
-  relatedGundam: string[];
-  defaultParams: {
-    [key: string]: {
-      type: 'slider' | 'color';
-      value: number | string;
-      min?: number;
-      max?: number;
-      step?: number;
-    };
-  };
-}
+import React, { createContext, useContext, ReactNode } from 'react';
+import { useEffectStore } from '../store/effectStore';
 
-interface EffectState {
-  effects: Effect[];
-  selectedEffect: Effect | null;
-  currentParams: Record<string, any>;
-  status: 'idle' | 'loading' | 'succeeded' | 'failed';
-  error: string | null;
-}
-
-type EffectAction =
-  | { type: 'SET_LOADING' }
-  | { type: 'SET_EFFECTS'; payload: Effect[] }
-  | { type: 'SET_ERROR'; payload: string }
-  | { type: 'SELECT_EFFECT'; payload: Effect }
-  | { type: 'UPDATE_PARAM'; payload: { key: string; value: any } }
-  | { type: 'RESET_PARAMS' };
-
-const initialState: EffectState = {
-  effects: [],
-  selectedEffect: null,
-  currentParams: {},
-  status: 'idle',
-  error: null,
-};
-
-function effectReducer(state: EffectState, action: EffectAction): EffectState {
-  switch (action.type) {
-    case 'SET_LOADING':
-      return { ...state, status: 'loading', error: null };
-    
-    case 'SET_EFFECTS':
-      return { 
-        ...state, 
-        effects: action.payload, 
-        status: 'succeeded',
-        selectedEffect: action.payload[0] || null,
-        currentParams: action.payload[0] ? 
-          Object.fromEntries(
-            Object.entries(action.payload[0].defaultParams).map(([key, config]) => [key, config.value])
-          ) : {}
-      };
-    
-    case 'SET_ERROR':
-      return { ...state, status: 'failed', error: action.payload };
-    
-    case 'SELECT_EFFECT':
-      return {
-        ...state,
-        selectedEffect: action.payload,
-        currentParams: Object.fromEntries(
-          Object.entries(action.payload.defaultParams).map(([key, config]) => [key, config.value])
-        ),
-      };
-    
-    case 'UPDATE_PARAM':
-      return {
-        ...state,
-        currentParams: {
-          ...state.currentParams,
-          [action.payload.key]: action.payload.value,
-        },
-      };
-    
-    case 'RESET_PARAMS':
-      if (!state.selectedEffect) return state;
-      return {
-        ...state,
-        currentParams: Object.fromEntries(
-          Object.entries(state.selectedEffect.defaultParams).map(([key, config]) => [key, config.value])
-        ),
-      };
-    
-    default:
-      return state;
-  }
-}
-
+// 더미 Context (하위 호환성)
 const EffectContext = createContext<{
-  state: EffectState;
-  dispatch: React.Dispatch<EffectAction>;
+  state: any;
+  dispatch: any;
 } | null>(null);
 
+/**
+ * @deprecated EffectProvider는 더 이상 필요하지 않습니다.
+ * useEffectStore를 직접 사용하세요.
+ */
 export function EffectProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(effectReducer, initialState);
-
-  return (
-    <EffectContext.Provider value={{ state, dispatch }}>
-      {children}
-    </EffectContext.Provider>
+  console.warn(
+    'EffectProvider is deprecated. ' +
+    'You can remove it from your component tree. ' +
+    'useEffectStore can be used directly without a provider.'
   );
+  
+  return <>{children}</>;
 }
 
+/**
+ * @deprecated useEffect()는 더 이상 사용되지 않습니다.
+ * 대신 useEffectStore()를 사용하세요.
+ * 
+ * 예시:
+ * ```typescript
+ * // 이전
+ * const { state } = useEffect();
+ * 
+ * // 이후
+ * const { selectedEffect, currentParams } = useEffectStore();
+ * ```
+ */
 export function useEffect() {
-  const context = useContext(EffectContext);
-  if (!context) {
-    throw new Error('useEffect must be used within an EffectProvider');
-  }
-  return context;
+  console.warn(
+    'useEffect() from EffectContext is deprecated. ' +
+    'Use useEffectStore() instead.'
+  );
+  
+  // 하위 호환성을 위해 effectStore를 래핑
+  const store = useEffectStore();
+  
+  return {
+    state: {
+      effects: store.effects,
+      selectedEffect: store.selectedEffect,
+      currentParams: Object.fromEntries(
+        Object.entries(store.currentParams).map(([key, param]) => [key, param.value])
+      ),
+      status: store.status,
+      error: store.error,
+    },
+    dispatch: () => {
+      console.warn('dispatch() is not supported. Use store actions instead.');
+    },
+  };
 }

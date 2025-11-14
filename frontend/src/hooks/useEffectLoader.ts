@@ -1,34 +1,24 @@
-import { useEffect, useCallback } from 'react';
-import { useEffect as useEffectContext } from '../contexts/EffectContext';
-import { fetchEffects } from '../services/effectService';
+import { useEffect } from 'react';
+import { useEffectStore } from '../store/effectStore';
 
+/**
+ * 효과 로더 훅
+ * 앱 시작 시 효과 목록을 자동으로 로드합니다.
+ */
 export function useEffectLoader() {
-  const { state, dispatch } = useEffectContext();
-
-  const loadEffects = useCallback(async () => {
-    if (state.effects.length > 0) return;
-
-    dispatch({ type: 'SET_LOADING' });
-    
-    try {
-      const effects = await fetchEffects();
-      dispatch({ type: 'SET_EFFECTS', payload: effects });
-    } catch (error) {
-      dispatch({ 
-        type: 'SET_ERROR', 
-        payload: error instanceof Error ? error.message : 'Failed to load effects' 
-      });
-    }
-  }, [state.effects.length, dispatch]);
+  const { fetchEffects, effects, status, error } = useEffectStore();
 
   useEffect(() => {
-    loadEffects();
-  }, [loadEffects]);
+    // 효과가 이미 로드되어 있으면 스킵
+    if (effects.length > 0) return;
+
+    // 효과 목록 로드
+    fetchEffects();
+  }, [effects.length, fetchEffects]);
 
   return {
-    loadEffects,
-    isLoading: state.status === 'loading',
-    error: state.error,
-    effects: state.effects
+    isLoading: status === 'loading',
+    error,
+    effects,
   };
 }

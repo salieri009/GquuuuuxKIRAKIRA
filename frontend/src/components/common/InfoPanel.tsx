@@ -2,13 +2,13 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useUI } from '../../contexts/UIContext';
-import { useEffect as useEffectContext } from '../../contexts/EffectContext';
+import { useEffectStore } from '../../store/effectStore';
 import GlassPanel from '../ui/GlassPanel';
 import NeonButton from '../ui/NeonButton';
 
 export default function InfoPanel() {
   const { state: uiState, dispatch: uiDispatch } = useUI();
-  const { state: effectState } = useEffectContext();
+  const { selectedEffect, currentParams } = useEffectStore();
 
   const closePanel = () => {
     uiDispatch({ type: 'TOGGLE_INFO_PANEL' });
@@ -35,32 +35,32 @@ export default function InfoPanel() {
             <GlassPanel className="p-lg">
               <div className="flex items-center justify-between mb-lg">
                 <h2 className="text-xl font-bold text-accent">
-                  {effectState.selectedEffect?.name || 'Kirakira'}
+                  {selectedEffect?.name || 'Kirakira'}
                 </h2>
                 <NeonButton onClick={closePanel} size="sm" variant="ghost">
                   <X size={16} />
                 </NeonButton>
               </div>
 
-              {effectState.selectedEffect ? (
+              {selectedEffect ? (
                 <div className="space-y-md">
                   <img
-                    src={effectState.selectedEffect.thumbnail}
-                    alt={effectState.selectedEffect.name}
+                    src={selectedEffect.thumbnail}
+                    alt={selectedEffect.name}
                     className="w-full h-32 object-cover rounded border border-primary-accent"
                   />
                   
                   <div>
                     <h3 className="font-bold text-text-primary mb-sm">Description</h3>
                     <p className="text-sm text-text-secondary">
-                      {effectState.selectedEffect.description}
+                      {selectedEffect.description}
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-bold text-text-primary mb-sm">Related Gundam</h3>
                     <div className="flex flex-wrap gap-sm">
-                      {effectState.selectedEffect.relatedGundam.map((gundam) => (
+                      {selectedEffect.relatedGundam.map((gundam) => (
                         <span
                           key={gundam}
                           className="px-3 py-1 text-sm bg-secondary-accent bg-opacity-20 text-secondary-accent rounded-full border border-secondary-accent border-opacity-30"
@@ -74,11 +74,11 @@ export default function InfoPanel() {
                   <div>
                     <h3 className="font-bold text-text-primary mb-sm">Parameters</h3>
                     <div className="space-y-sm">
-                      {Object.entries(effectState.selectedEffect.defaultParams).map(([key, config]) => (
+                      {Object.entries(selectedEffect.defaultParams).map(([key, config]) => (
                         <div key={key} className="flex justify-between items-center text-sm">
                           <span className="text-text-secondary capitalize">{key}</span>
                           <span className="text-accent font-mono">
-                            {effectState.currentParams[key] || config.value}
+                            {currentParams[key]?.value ?? config.value}
                           </span>
                         </div>
                       ))}
