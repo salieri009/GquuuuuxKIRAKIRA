@@ -12,7 +12,7 @@
 
 **プロジェクト**: Kirakira - インタラクティブ3Dガンダムエフェクトビューア  
 **タイプ**: Webアプリケーション  
-**技術**: Vue.js 3 + Three.js + Webpack
+**技術**: React 18 + TypeScript + Three.js + Vite
 
 </div>
 
@@ -94,22 +94,25 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── src/
-│   ├── components/          # Vueコンポーネント
-│   │   ├── layout/         # レイアウトコンポーネント
-│   │   ├── effects/        # 3Dエフェクトコンポーネント
-│   │   ├── library/        # エフェクトライブラリコンポーネント
-│   │   └── ui/             # UIコンポーネント
-│   ├── effects/             # Three.jsエフェクトモジュール
-│   ├── store/               # Piniaストア
-│   ├── services/            # APIサービス
-│   ├── router/              # Vue Router
-│   ├── styles/              # グローバルスタイル
-│   ├── mock/                # Mockデータ
-│   └── utils/               # ユーティリティ関数
-├── public/                  # 静的アセット
-├── docs/                    # 開発ドキュメント
-├── design-plan/             # デザイン仕様
+├── frontend/
+│   └── src/
+│       ├── components/       # Reactコンポーネント
+│       │   ├── common/       # 共有コンポーネント
+│       │   ├── effects/      # 3Dエフェクトコンポーネント
+│       │   ├── layout/       # レイアウトコンポーネント
+│       │   └── ui/           # UIプリミティブ
+│       ├── contexts/         # React Contextプロバイダー
+│       ├── effects/          # Three.jsエフェクトモジュール
+│       ├── hooks/            # カスタムReactフック
+│       ├── services/         # APIサービス
+│       ├── styles/           # CSS変数＆グローバルスタイル
+│       └── data/             # 静的エフェクトデータ
+├── design-plan/              # デザイン仕様
+│   ├── DESIGN/               # UI/UXデザイン文書 (DES-001~008)
+│   ├── RESEARCH/             # ビジュアルリサーチ (RES-001~004)
+│   └── SPECS/                # 技術仕様 (SPEC-001~004)
+├── docs/                     # 開発ガイド
+└── vite.config.ts            # Vite設定
 └── webpack.config.js        # Webpack設定
 ```
 
@@ -119,11 +122,11 @@ GundamKiraKIra/
 
 ### フロントエンド
 
-- **Vue.js 3**: Composition API、リアクティブシステム
-- **Vue Router**: クライアントサイドルーティング
-- **Pinia**: 状態管理
+- **React 18**: フック付き関数型コンポーネント
+- **TypeScript**: 型安全な開発
 - **Three.js**: 3DグラフィックスとWebGLレンダリング
-- **Webpack**: モジュールバンドラーとビルドツール
+- **Framer Motion**: スムーズなアニメーション
+- **Vite**: 高速開発＆ビルドツール
 
 ### スタイリング
 
@@ -166,16 +169,20 @@ GundamKiraKIra/
 | 🇺🇸 | [English](README.md) | 英語完全ドキュメント |
 | 🇯🇵 | [日本語](README.ja.md) | 日本語完全ドキュメント |
 
-### 開発ガイド
+### デザイン仕様 (`design-plan/`)
 
-- [開発環境セットアップ](docs/01_Development_Environment_Setup.md)
-- [コンポーネント実装ガイド](docs/02_Component_Implementation_Guide.md)
-- [状態管理ガイド](docs/03_State_Management_Guide.md)
-- [3Dエフェクトシステムガイド](docs/04_3D_Effect_System_Guide.md)
-- [APIサービスガイド](docs/05_API_Services_Guide.md)
-- [スタイリング実装ガイド](docs/06_Styling_Implementation_Guide.md)
-- [テスト設定ガイド](docs/07_Testing_Setup_Guide.md)
-- [デプロイガイド](docs/08_Deployment_Guide.md)
+| フォルダ | ドキュメント | 内容 |
+|----------|-------------|------|
+| `RESEARCH/` | RES-001~004 | タイムライン別ビジュアルリサーチ (UC/AD) |
+| `DESIGN/` | DES-001~008 | カラーシステム、タイポグラフィ、コンポーネント |
+| `SPECS/` | SPEC-001~004 | アーキテクチャ、API、ビルド設定 |
+
+### 技術ドキュメント (`design-plan/SPECS/`)
+
+- [SPEC-001: システムアーキテクチャ](design-plan/SPECS/SPEC-001-System-Architecture.md)
+- [SPEC-002: コンポーネント設計](design-plan/SPECS/SPEC-002-Component-Design.md)
+- [SPEC-003: API & データフロー](design-plan/SPECS/SPEC-003-API-Data-Flow.md)
+- [SPEC-004: ビルド環境](design-plan/SPECS/SPEC-004-Build-Environment.md)
 
 ---
 

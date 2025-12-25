@@ -12,7 +12,7 @@ Language: [🇰🇷 한국어](README.ko.md) | [🇺🇸 English](README.md) | [
 
 **Project**: Kirakira - Interactive 3D Gundam Effects Viewer  
 **Type**: Web Application  
-**Technology**: Vue.js 3 + Three.js + Webpack
+**Technology**: React 18 + TypeScript + Three.js + Vite
 
 </div>
 
@@ -94,23 +94,25 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── src/
-│   ├── components/          # Vue components
-│   │   ├── layout/         # Layout components
-│   │   ├── effects/        # 3D effect components
-│   │   ├── library/        # Effect library components
-│   │   └── ui/             # UI components
-│   ├── effects/            # Three.js effect modules
-│   ├── store/              # Pinia stores
-│   ├── services/           # API services
-│   ├── router/             # Vue Router
-│   ├── styles/             # Global styles
-│   ├── mock/               # Mock data
-│   └── utils/              # Utility functions
-├── public/                  # Static assets
-├── docs/                   # Development documentation
-├── design-plan/            # Design specifications
-└── webpack.config.js       # Webpack configuration
+├── frontend/
+│   └── src/
+│       ├── components/       # React components
+│       │   ├── common/       # Shared components
+│       │   ├── effects/      # 3D effect components
+│       │   ├── layout/       # Layout components
+│       │   └── ui/           # UI primitives
+│       ├── contexts/         # React Context providers
+│       ├── effects/          # Three.js effect modules
+│       ├── hooks/            # Custom React hooks
+│       ├── services/         # API services
+│       ├── styles/           # CSS variables & global styles
+│       └── data/             # Static effect data
+├── design-plan/              # Design specifications
+│   ├── DESIGN/               # UI/UX design docs (DES-001~008)
+│   ├── RESEARCH/             # Visual research (RES-001~004)
+│   └── SPECS/                # Technical specs (SPEC-001~004)
+├── docs/                     # Development guides
+└── vite.config.ts            # Vite configuration
 ```
 
 ---
@@ -119,11 +121,11 @@ GundamKiraKIra/
 
 ### Frontend
 
-- **Vue.js 3**: Composition API, reactive system
-- **Vue Router**: Client-side routing
-- **Pinia**: State management
+- **React 18**: Functional components with hooks
+- **TypeScript**: Type-safe development
 - **Three.js**: 3D graphics and WebGL rendering
-- **Webpack**: Module bundler and build tool
+- **Framer Motion**: Smooth animations
+- **Vite**: Fast development and build tool
 
 ### Styling
 
@@ -166,16 +168,20 @@ GundamKiraKIra/
 | 🇺🇸 | [English](README.md) | Full documentation in English |
 | 🇯🇵 | [日本語](README.ja.md) | 日本語完全ドキュメント |
 
-### Development Guides
+### Design Specifications (`design-plan/`)
 
-- [Development Environment Setup](docs/01_Development_Environment_Setup.md)
-- [Component Implementation Guide](docs/02_Component_Implementation_Guide.md)
-- [State Management Guide](docs/03_State_Management_Guide.md)
-- [3D Effect System Guide](docs/04_3D_Effect_System_Guide.md)
-- [API Services Guide](docs/05_API_Services_Guide.md)
-- [Styling Implementation Guide](docs/06_Styling_Implementation_Guide.md)
-- [Testing Setup Guide](docs/07_Testing_Setup_Guide.md)
-- [Deployment Guide](docs/08_Deployment_Guide.md)
+| Folder | Documents | Content |
+|--------|-----------|----------|
+| `RESEARCH/` | RES-001~004 | Visual research by timeline (UC/AD) |
+| `DESIGN/` | DES-001~008 | Color system, typography, components |
+| `SPECS/` | SPEC-001~004 | Architecture, API, build config |
+
+### Technical Documentation (`design-plan/SPECS/`)
+
+- [SPEC-001: System Architecture](design-plan/SPECS/SPEC-001-System-Architecture.md)
+- [SPEC-002: Component Design](design-plan/SPECS/SPEC-002-Component-Design.md)
+- [SPEC-003: API & Data Flow](design-plan/SPECS/SPEC-003-API-Data-Flow.md)
+- [SPEC-004: Build Environment](design-plan/SPECS/SPEC-004-Build-Environment.md)
 
 ---
 

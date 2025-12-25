@@ -12,7 +12,7 @@
 
 **프로젝트**: Kirakira - 인터랙티브 3D 건담 효과 뷰어  
 **유형**: 웹 애플리케이션  
-**기술**: Vue.js 3 + Three.js + Webpack
+**기술**: React 18 + TypeScript + Three.js + Vite
 
 </div>
 
@@ -94,22 +94,25 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── src/
-│   ├── components/          # Vue 컴포넌트
-│   │   ├── layout/         # 레이아웃 컴포넌트
-│   │   ├── effects/        # 3D 효과 컴포넌트
-│   │   ├── library/        # 효과 라이브러리 컴포넌트
-│   │   └── ui/             # UI 컴포넌트
-│   ├── effects/             # Three.js 효과 모듈
-│   ├── store/               # Pinia 스토어
-│   ├── services/            # API 서비스
-│   ├── router/              # Vue Router
-│   ├── styles/              # 전역 스타일
-│   ├── mock/                # Mock 데이터
-│   └── utils/               # 유틸리티 함수
-├── public/                  # 정적 에셋
-├── docs/                    # 개발 문서
-├── design-plan/             # 디자인 명세
+├── frontend/
+│   └── src/
+│       ├── components/       # React 컴포넌트
+│       │   ├── common/       # 공유 컴포넌트
+│       │   ├── effects/      # 3D 효과 컴포넌트
+│       │   ├── layout/       # 레이아웃 컴포넌트
+│       │   └── ui/           # UI 프리미티브
+│       ├── contexts/         # React Context 프로바이더
+│       ├── effects/          # Three.js 효과 모듈
+│       ├── hooks/            # 커스텀 React 훅
+│       ├── services/         # API 서비스
+│       ├── styles/           # CSS 변수 & 전역 스타일
+│       └── data/             # 정적 효과 데이터
+├── design-plan/              # 디자인 명세
+│   ├── DESIGN/               # UI/UX 디자인 문서 (DES-001~008)
+│   ├── RESEARCH/             # 시각 자료조사 (RES-001~004)
+│   └── SPECS/                # 기술 명세 (SPEC-001~004)
+├── docs/                     # 개발 가이드
+└── vite.config.ts            # Vite 설정
 └── webpack.config.js        # Webpack 설정
 ```
 
@@ -119,11 +122,11 @@ GundamKiraKIra/
 
 ### 프론트엔드
 
-- **Vue.js 3**: Composition API, 반응형 시스템
-- **Vue Router**: 클라이언트 사이드 라우팅
-- **Pinia**: 상태 관리
+- **React 18**: Hooks를 활용한 함수형 컴포넌트
+- **TypeScript**: 타입 안전 개발
 - **Three.js**: 3D 그래픽 및 WebGL 렌더링
-- **Webpack**: 모듈 번들러 및 빌드 도구
+- **Framer Motion**: 부드러운 애니메이션
+- **Vite**: 빠른 개발 및 빌드 도구
 
 ### 스타일링
 
@@ -166,16 +169,20 @@ GundamKiraKIra/
 | 🇺🇸 | [English](README.md) | 영어 전체 문서 |
 | 🇯🇵 | [日本語](README.ja.md) | 일본어 전체 문서 |
 
-### 개발 가이드
+### 디자인 명세 (`design-plan/`)
 
-- [개발 환경 설정](docs/01_Development_Environment_Setup.md)
-- [컴포넌트 구현 가이드](docs/02_Component_Implementation_Guide.md)
-- [상태 관리 가이드](docs/03_State_Management_Guide.md)
-- [3D 효과 시스템 가이드](docs/04_3D_Effect_System_Guide.md)
-- [API 서비스 가이드](docs/05_API_Services_Guide.md)
-- [스타일링 구현 가이드](docs/06_Styling_Implementation_Guide.md)
-- [테스팅 설정 가이드](docs/07_Testing_Setup_Guide.md)
-- [배포 가이드](docs/08_Deployment_Guide.md)
+| 폴더 | 문서 | 내용 |
+|------|------|------|
+| `RESEARCH/` | RES-001~004 | 타임라인별 시각 자료조사 (UC/AD) |
+| `DESIGN/` | DES-001~008 | 색상 시스템, 타이포그래피, 컴포넌트 |
+| `SPECS/` | SPEC-001~004 | 아키텍처, API, 빌드 설정 |
+
+### 기술 문서 (`design-plan/SPECS/`)
+
+- [SPEC-001: 시스템 아키텍처](design-plan/SPECS/SPEC-001-System-Architecture.md)
+- [SPEC-002: 컴포넌트 설계](design-plan/SPECS/SPEC-002-Component-Design.md)
+- [SPEC-003: API & 데이터 흐름](design-plan/SPECS/SPEC-003-API-Data-Flow.md)
+- [SPEC-004: 빌드 환경](design-plan/SPECS/SPEC-004-Build-Environment.md)
 
 ---
 
