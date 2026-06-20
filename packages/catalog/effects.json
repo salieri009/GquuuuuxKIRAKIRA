@@ -1,0 +1,209 @@
+[
+  {
+    "id": "gn-particles",
+    "name": "GN 입자",
+    "description": "건담 00 시리즈 GN 드라이브 입자. #00FF88 상승 부유·드라이브 클러스터 (RES-002).",
+    "thumbnail": "https://images.pexels.com/photos/1162251/pexels-photo-1162251.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["Gundam Exia", "Gundam 00", "Gundam Qan[T]"],
+    "defaultParams": {
+      "count": {
+        "type": "slider",
+        "value": 1000,
+        "min": 100,
+        "max": 3000,
+        "step": 100
+      },
+      "speed": {
+        "type": "slider",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 2.0,
+        "step": 0.1
+      },
+      "color": {
+        "type": "color",
+        "value": "#00FF88"
+      },
+      "size": {
+        "type": "slider",
+        "value": 0.02,
+        "min": 0.01,
+        "max": 0.1,
+        "step": 0.01
+      }
+    }
+  },
+  {
+    "id": "minovsky-particles",
+    "name": "미노프스키 입자",
+    "description": "UC 미노프스키 분포장. #00AAFF Brownian 난류·레이더 간섭 #FF6666 (RES-001).",
+    "thumbnail": "https://images.pexels.com/photos/1037993/pexels-photo-1037993.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["RX-78-2", "Nu Gundam", "Unicorn Gundam"],
+    "defaultParams": {
+      "density": {
+        "type": "slider",
+        "value": 0.3,
+        "min": 0.1,
+        "max": 1.0,
+        "step": 0.1
+      },
+      "turbulence": {
+        "type": "slider",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 2.0,
+        "step": 0.1
+      },
+      "color": {
+        "type": "color",
+        "value": "#00AAFF"
+      },
+      "opacity": {
+        "type": "slider",
+        "value": 0.7,
+        "min": 0.1,
+        "max": 1.0,
+        "step": 0.1
+      }
+    }
+  },
+  {
+    "id": "newtype-flash",
+    "name": "뉴타입 섬광",
+    "description": "뉴타입 각성 섬광. 마젠타 코어·시안 리플 확장 파동 (RES-001 newtype-ripple).",
+    "thumbnail": "https://images.pexels.com/photos/1363876/pexels-photo-1363876.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["Gundam", "Z Gundam", "Nu Gundam"],
+    "defaultParams": {
+      "intensity": {
+        "type": "slider",
+        "value": 0.8,
+        "min": 0.1,
+        "max": 2.0,
+        "step": 0.1
+      },
+      "ripples": {
+        "type": "slider",
+        "value": 3,
+        "min": 1,
+        "max": 10,
+        "step": 1
+      },
+      "color": {
+        "type": "color",
+        "value": "#FF00FF"
+      },
+      "frequency": {
+        "type": "slider",
+        "value": 1.0,
+        "min": 0.1,
+        "max": 3.0,
+        "step": 0.1
+      }
+    }
+  },
+  {
+    "id": "psyco-field",
+    "name": "사이코 필드",
+    "description": "사이코 프레임 공명 필드. 다각형 장벽·크랙링·과부하 오렌지 (RES-001 §3).",
+    "thumbnail": "https://images.pexels.com/photos/1166644/pexels-photo-1166644.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["Sazabi", "Nu Gundam", "Psycho Gundam"],
+    "defaultParams": {
+      "fieldStrength": {
+        "type": "slider",
+        "value": 1.2,
+        "min": 0.5,
+        "max": 3.0,
+        "step": 0.1
+      },
+      "geometry": {
+        "type": "slider",
+        "value": 6,
+        "min": 3,
+        "max": 12,
+        "step": 1
+      },
+      "color": {
+        "type": "color",
+        "value": "#FF4444"
+      },
+      "rotation": {
+        "type": "slider",
+        "value": 0.5,
+        "min": 0.0,
+        "max": 2.0,
+        "step": 0.1
+      }
+    }
+  },
+  {
+    "id": "trans-am",
+    "name": "트랜스 암",
+    "description": "트랜스 암 GN 드라이브 전력개방. 녹→적 전환·#FF0044 분출·잔상 (RES-002 §2).",
+    "thumbnail": "https://images.pexels.com/photos/1670977/pexels-photo-1670977.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["Gundam Exia", "Gundam 00 Raiser"],
+    "defaultParams": {
+      "power": {
+        "type": "slider",
+        "value": 2.0,
+        "min": 1.0,
+        "max": 5.0,
+        "step": 0.2
+      },
+      "heat": {
+        "type": "slider",
+        "value": 0.8,
+        "min": 0.3,
+        "max": 1.5,
+        "step": 0.1
+      },
+      "color": {
+        "type": "color",
+        "value": "#FF0044"
+      },
+      "afterglow": {
+        "type": "slider",
+        "value": 1.5,
+        "min": 0.5,
+        "max": 3.0,
+        "step": 0.1
+      }
+    }
+  },
+  {
+    "id": "gquax-kirakira",
+    "name": "키라키라 (GQuuuuuuX)",
+    "description": "GQuuuuuuX 뉴타입 현상 키라키라. 다색 스파클·모아레 겹침·제크노바 초점 광.",
+    "thumbnail": "https://images.pexels.com/photos/7130469/pexels-photo-7130469.jpeg?auto=compress&cs=tinysrgb&w=300",
+    "relatedGundam": ["GQuuuuuuX", "Machu", "Shuji"],
+    "defaultParams": {
+      "sparkle": {
+        "type": "slider",
+        "value": 1.0,
+        "min": 0.2,
+        "max": 2.0,
+        "step": 0.1
+      },
+      "moire": {
+        "type": "slider",
+        "value": 0.6,
+        "min": 0.0,
+        "max": 1.0,
+        "step": 0.05
+      },
+      "intensity": {
+        "type": "slider",
+        "value": 1.0,
+        "min": 0.2,
+        "max": 2.0,
+        "step": 0.1
+      },
+      "hueSpeed": {
+        "type": "slider",
+        "value": 0.5,
+        "min": 0.1,
+        "max": 2.0,
+        "step": 0.1
+      }
+    }
+  }
+]

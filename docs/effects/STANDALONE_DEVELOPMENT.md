@@ -13,7 +13,7 @@
 1. **인터페이스 기반**: 표준 인터페이스만 구현하면 됨
 2. **동적 로딩**: 런타임에 효과를 로드
 3. **독립 디렉토리**: 메인 프로젝트와 완전히 분리
-4. **의존성 분리**: Three.js만 필요 (메인 프로젝트 코드 불필요)
+4. **의존성 분리**: Three.js 필수, `@kirakira/effect-sdk` 선택 (`apps/web` 코드 불필요)
 
 ---
 
@@ -23,19 +23,20 @@
 
 ```bash
 # 어디든 가능! 메인 프로젝트와 완전히 분리
-mkdir -p D:/my-effects/gnParticles
-cd D:/my-effects/gnParticles
+mkdir -p D:/my-effects/gn-particles
+cd D:/my-effects/gn-particles
 ```
 
 ### 2단계: 타입 정의 (선택사항)
 
-메인 프로젝트의 타입을 import하지 않고 직접 정의:
+`@kirakira/effect-sdk`를 사용하거나, 메인 앱 없이 직접 정의:
 
 ```typescript
-// my-effects/gnParticles/index.ts
+// my-effects/gn-particles/index.ts + effect.ts (catalog metadata in packages/catalog only)
 import * as THREE from 'three';
+import type { EffectModule } from '@kirakira/effect-sdk'; // 선택
 
-// 타입을 직접 정의 (메인 프로젝트 의존성 없음)
+// 또는 타입을 직접 정의 (effect-sdk 의존성 없음)
 interface MyEffectObjects {
   particleSystem: THREE.Points;
   geometry: THREE.BufferGeometry;
@@ -69,28 +70,49 @@ const myEffect = {
 export default myEffect;
 ```
 
-### 3단계: 메인 프로젝트 설정
+내장 예제는 `dispose`에서 `safeDisposeEffectRoot`( `particleUtils` )를 사용합니다. sync `geometry.dispose()`는 WebGL 프레임 중 크래시를 유발할 수 있습니다.
 
-메인 프로젝트에서 효과 경로만 설정:
+### 3단계: 웹 앱 설정 (`@kirakira/web`)
+
+모노레포 루트에서 개발 서버 실행:
+
+```bash
+# 저장소 루트 (d:\UTS\GundamKiraKIra)
+npm install
+npm run dev          # apps/web → http://localhost:5173
+npm run dev:api      # apps/api → http://localhost:3001 (카탈로그 API)
+```
+
+효과 경로는 `apps/web/src/App.tsx` 또는 환경 변수로 설정:
 
 ```typescript
-// frontend/src/App.tsx
-EffectService.setBasePath('/my-effects');
+// apps/web/src/App.tsx
+const effectsPath = import.meta.env.VITE_EFFECTS_PATH || '/effects';
+EffectService.setBasePath(effectsPath);
 // 또는
-EffectService.setBasePath('D:/my-effects'); // 절대 경로
+EffectService.setBasePath('/my-effects');
+// EffectService.setBasePath('D:/my-effects'); // 절대 경로 (개발 시)
+```
+
+`.env` 예시:
+
+```bash
+VITE_EFFECTS_PATH=/my-effects
 ```
 
 ---
 
 ## 📊 Coupling 수준 평가
 
-### 현재 구조
+### 현재 구조 (모노레포)
 
 ```
-메인 프로젝트 (Kirakira)
-    ↓ (인터페이스만 알면 됨)
+@kirakira/web (apps/web)
+    ↓ EffectModule 계약
+@kirakira/effect-sdk (packages/effect-sdk)
+    ↓ (선택 import)
 효과 모듈 (독립 디렉토리)
-    ↓ (Three.js만 필요)
+    ↓ Three.js
 Three.js 라이브러리
 ```
 
@@ -100,8 +122,9 @@ Three.js 라이브러리
 
 ```
 효과 모듈 → Three.js (필수)
-효과 모듈 → 메인 프로젝트 (없음!) ✅
-메인 프로젝트 → 효과 모듈 (인터페이스만) ✅
+효과 모듈 → @kirakira/effect-sdk (선택, 타입·헬퍼)
+효과 모듈 → apps/web (없음!) ✅
+apps/web → 효과 모듈 (EffectModule 인터페이스만) ✅
 ```
 
 ---
@@ -112,8 +135,9 @@ Three.js 라이브러리
 
 ```typescript
 // 효과 개발자가 작성하는 코드
-// 메인 프로젝트의 어떤 파일도 import하지 않음 ✅
+// apps/web의 어떤 파일도 import하지 않음 ✅
 import * as THREE from 'three';
+import type { EffectModule } from '@kirakira/effect-sdk'; // 선택
 
 export default {
   init: (scene, params) => { /* ... */ },
@@ -125,17 +149,16 @@ export default {
 ### 2. 메인 프로젝트는 효과의 내부 구현을 몰라도 됨
 
 ```typescript
-// 메인 프로젝트 코드
-// 효과의 내부 구현을 전혀 모름 ✅
-const { module } = await EffectLoader.loadEffect('gnParticles');
-const objects = module.init(scene, params); // 인터페이스만 사용
+// apps/web — 효과 내부 구현을 모름 ✅
+const module = await EffectLoader.loadEffect('gn-particles');
+const objects = module.init(scene, params); // @kirakira/effect-sdk 계약만 사용
 ```
 
 ### 3. 독립적인 배포 가능
 
 ```bash
 # 효과를 별도 npm 패키지로 배포
-cd my-effects/gnParticles
+cd my-effects/gn-particles
 npm publish
 ```
 
@@ -146,10 +169,10 @@ npm publish
 **네, 맞습니다! 완전히 Loose Coupling되어 있습니다.**
 
 - ✅ 효과 개발자는 다른 디렉토리에서 개발 가능
-- ✅ 메인 프로젝트와 완전히 분리
+- ✅ `apps/web`과 완전히 분리 (`@kirakira/effect-sdk`로 계약 공유)
 - ✅ 인터페이스 기반 설계
 - ✅ 동적 로딩으로 런타임 연결
 - ✅ 독립적인 배포 가능
 
-**30년차 엔지니어 평가**: 현재 구조는 **Plugin Architecture** 패턴을 완벽하게 구현하고 있으며, 효과 개발자가 메인 프로젝트를 전혀 알 필요 없이 개발할 수 있습니다.
+**30년차 엔지니어 평가**: 모노레포 **Plugin Architecture** 패턴으로, 효과 개발자가 `apps/web`을 몰라도 `@kirakira/effect-sdk`만으로 개발할 수 있습니다.
 

@@ -1,21 +1,24 @@
 # DES-004: Component Library
 
 ## Overview
-UI component specifications for the Kirakira project, derived from `components.css` and React component implementations.
+UI component specifications for the Kirakira project, derived from `apps/web/src/styles/components.css` and React components in `apps/web/src/components/ui/`.
+
+> **Implementation (2026-06-19):** **Premium Minimal** chrome — prefer `Button` component over `.neon-button` CSS. Glass panels are flat surfaces with 1px neutral borders.
+
+**Source of truth:** `apps/web/src/styles/components.css`, `apps/web/src/components/ui/Button.tsx`
 
 ---
 
 ## 1. Glass Panel
 
-Translucent panel with blur effect and neon border.
+Flat panel with subtle border (minimal blur).
 
 ### 1.1 Specifications
 
 | Property | Value |
 |----------|-------|
-| Background | `var(--gradient-glass)` |
-| Backdrop Filter | `blur(10px)` |
-| Border | `1px solid rgba(0, 255, 255, 0.2)` |
+| Background | `var(--color-tertiary-bg)` |
+| Border | `1px solid var(--color-border-primary)` |
 | Border Radius | `var(--radius-lg)` (12px) |
 | Box Shadow | `var(--shadow-glass)` |
 
@@ -23,72 +26,48 @@ Translucent panel with blur effect and neon border.
 
 | State | Border Color | Additional Styles |
 |-------|--------------|-------------------|
-| Default | `rgba(0, 255, 255, 0.2)` | - |
-| Hover | `rgba(0, 255, 255, 0.4)` | `+ var(--shadow-neon-cyan)` |
-| Active | `var(--color-primary-accent)` | Solid cyan border |
+| Default | `var(--color-border-primary)` | — |
+| Hover (cards) | `var(--color-border-hover)` | Background `var(--color-tertiary-bg)` |
 
 ### 1.3 CSS Implementation
 
 ```css
 .glass-panel {
-  background: var(--gradient-glass);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 255, 0.2);
+  background: var(--color-tertiary-bg);
+  border: 1px solid var(--color-border-primary);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-glass);
-  transition: all var(--transition-normal);
-}
-
-.glass-panel:hover {
-  border-color: rgba(0, 255, 255, 0.4);
-  box-shadow: var(--shadow-glass), var(--shadow-neon-cyan);
 }
 ```
 
 ---
 
-## 2. Neon Button
+## 2. Button (`Button.tsx`)
 
-Interactive button with neon glow effect.
+Primary interactive control. Replaces legacy **NeonButton** in app code.
 
 ### 2.1 Variants
 
-| Variant | Border | Text | Hover Background |
-|---------|--------|------|------------------|
-| Primary | `#00FFFF` | `#00FFFF` | `#00FFFF` |
-| Secondary | `#FF00FF` | `#FF00FF` | `#FF00FF` |
-| Ghost | `#00FFFF` | `#00FFFF` | Transparent |
+| Variant | Background | Border | Text |
+|---------|------------|--------|------|
+| Primary | `var(--color-primary-accent)` | transparent | `var(--color-text-inverse)` |
+| Secondary | `var(--color-surface)` | `var(--color-border-primary)` | `var(--color-text-primary)` |
+| Ghost | transparent | transparent | `var(--color-text-secondary)` |
+| Danger | transparent | `danger/40` | `var(--color-danger)` |
 
 ### 2.2 Specifications
 
 | Property | Value |
 |----------|-------|
-| Padding | `0.75rem 1.5rem` |
-| Border | `2px solid` |
-| Border Radius | `var(--radius-md)` (8px) |
-| Font Weight | 700 |
-| Font Size | `var(--font-size-sm)` |
-| Text Transform | uppercase |
-| Letter Spacing | 0.1em |
+| Font Weight | 500 (medium) |
+| Font Size | `sm`–`base` by size prop |
+| Text Transform | none |
+| Transition | `150ms` colors only |
+| Focus | `focus-visible:ring-2` accent |
 
-### 2.3 Hover Animation
+### 2.3 Legacy `.neon-button`
 
-```css
-.neon-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.3), transparent);
-  transition: left var(--transition-slow);
-}
-
-.neon-button:hover::before {
-  left: 100%;
-}
-```
+Retained in CSS as minimal ghost fallback; **do not use in new components**.
 
 ---
 
@@ -100,44 +79,44 @@ Clickable card for effect selection.
 
 | Property | Value |
 |----------|-------|
-| Background | `var(--gradient-panel)` |
-| Border | `1px solid rgba(0, 255, 255, 0.1)` |
+| Background | `var(--color-secondary-bg)` |
+| Border | `1px solid var(--color-border-primary)` |
 | Border Radius | `var(--radius-lg)` |
-| Padding | `var(--spacing-6)` (24px) |
+| Padding | per layout (`EffectLibrary`) |
 | Cursor | pointer |
 
 ### 3.2 States
 
-| State | Transform | Border | Shadow |
-|-------|-----------|--------|--------|
-| Default | none | `rgba(0, 255, 255, 0.1)` | `var(--shadow-panel)` |
-| Hover | `translateY(-2px)` | `rgba(0, 255, 255, 0.3)` | `+ var(--shadow-neon-cyan)` |
-| Active | none | `var(--color-primary-accent)` | `var(--shadow-neon-cyan)` |
+| State | Border | Accent |
+|-------|--------|--------|
+| Default | `var(--color-border-primary)` | — |
+| Hover | `var(--color-border-hover)` | Background `var(--color-tertiary-bg)` |
+| Selected | unchanged | **Left bar** 3px `var(--color-primary-accent)` |
 
-### 3.3 Top Accent Line
+### 3.3 Left Accent Bar (selected)
 
 ```css
 .effect-card::before {
   content: '';
   position: absolute;
-  top: 0;
   left: 0;
-  right: 0;
-  height: 2px;
-  background: var(--gradient-primary);
-  transform: scaleX(0);
-  transition: transform var(--transition-normal);
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-primary-accent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
-.effect-card:hover::before,
-.effect-card.active::before {
-  transform: scaleX(1);
+.effect-card.active::before,
+.effect-card[data-selected='true']::before {
+  opacity: 1;
 }
 ```
 
 ---
 
-## 4. Neon Slider
+## 4. Slider (`.neon-slider` / `NeonSlider.tsx`)
 
 Custom range input with neon styling.
 
@@ -146,18 +125,19 @@ Custom range input with neon styling.
 | Element | Property | Value |
 |---------|----------|-------|
 | Track | Height | 4px |
-| Track | Background | `var(--color-secondary-bg)` |
-| Track (Filled) | Background | `var(--gradient-primary)` |
-| Thumb | Size | 16px × 16px |
-| Thumb | Background | `var(--color-primary-accent)` |
-| Thumb | Shadow | `var(--shadow-neon-cyan)` |
+| Track | Background | `var(--color-border-primary)` |
+| Track (Filled) | Background | `var(--color-primary-accent)` |
+| Thumb | Size | 14px × 14px |
+| Thumb | Background | `var(--color-text-primary)` |
+| Thumb | Border | `2px solid var(--color-primary-accent)` |
+| Thumb | Shadow | `var(--shadow-sm)` |
 
 ### 4.2 Thumb States
 
 | State | Transform | Shadow |
 |-------|-----------|--------|
-| Default | `scale(1)` | `var(--shadow-neon-cyan)` |
-| Hover/Active | `scale(1.2)` | Enhanced glow |
+| Default | `scale(1)` | `var(--shadow-sm)` |
+| Hover/Active | `scale(1.1)` | unchanged |
 
 ---
 
@@ -193,10 +173,10 @@ Notification popup with auto-dismiss.
 
 | Type | Border Color | Icon |
 |------|--------------|------|
-| Success | `#00FF88` | ✓ |
-| Error | `#FF4444` | ✗ |
-| Warning | `#FFD700` | ⚠ |
-| Info | `#00FFFF` | ℹ |
+| Success | `var(--color-success)` | ✓ |
+| Error | `var(--color-danger)` | ✗ |
+| Warning | `var(--color-warning)` | ⚠ |
+| Info | `var(--color-info)` | ℹ |
 
 ### 6.2 Specifications
 
@@ -230,7 +210,7 @@ Backdrop for modals and side panels.
 | Background | `var(--gradient-panel)` |
 | Border | `1px solid var(--color-border-accent)` |
 | Border Radius | `var(--radius-xl)` |
-| Box Shadow | `var(--shadow-xl)`, `var(--shadow-neon-cyan)` |
+| Box Shadow | `var(--shadow-xl)` |
 | Z-Index | `var(--z-modal)` (500) |
 
 ---

@@ -6,28 +6,39 @@
 
 ```
 ┌─────────────────────────────────┐
-│   메인 프로젝트 (Kirakira)      │
+│   @kirakira/web (apps/web)      │
 │                                 │
 │   EffectLoader                  │
 │   EffectService                 │
 │   EffectCanvas                  │
 └────────────┬────────────────────┘
              │
-             │ (인터페이스만 알면 됨)
+             │ (EffectModule 인터페이스만 알면 됨)
+             │
+             ▼
+┌─────────────────────────────────┐
+│   @kirakira/effect-sdk          │
+│   (packages/effect-sdk)         │
+│                                 │
+│   EffectModule, EffectObjects   │
+│   런타임 계약 (Three.js)        │
+└────────────┬────────────────────┘
+             │
+             │ (선택: 타입만 import)
              │
              ▼
 ┌─────────────────────────────────┐
 │   효과 모듈 (독립 디렉토리)      │
 │                                 │
-│   - gnParticles/               │
+│   - gn-particles/              │
 │   - newtypeFlash/               │
 │   - ...                         │
 │                                 │
-│   의존성: Three.js만 필요       │
-│   메인 프로젝트 코드: 불필요    │
+│   의존성: Three.js (+ effect-sdk 선택)
+│   apps/web 소스: 불필요         │
 └────────────┬────────────────────┘
              │
-             │ (Three.js만)
+             │ (Three.js)
              │
              ▼
 ┌─────────────────────────────────┐
@@ -43,17 +54,18 @@
 
 **필요한 것**:
 - ✅ Three.js 라이브러리
-- ✅ 표준 인터페이스 (문서로 제공)
-- ❌ 메인 프로젝트 코드 (불필요!)
-- ❌ 메인 프로젝트 타입 (선택사항)
+- ✅ `@kirakira/effect-sdk` — `EffectModule` 런타임 계약 (선택, 타입·헬퍼용)
+- ❌ `apps/web` 소스 코드 (불필요!)
+- ❌ `@kirakira/web` 내부 구현 (불필요!)
 
 **코드 예시**:
 ```typescript
 // 완전히 독립적인 효과 코드
 import * as THREE from 'three';
+import type { EffectModule } from '@kirakira/effect-sdk'; // 선택: 런타임 계약 타입
 
-// 메인 프로젝트를 전혀 import하지 않음 ✅
-export default {
+// apps/web 소스를 전혀 import하지 않음 ✅
+const effect: EffectModule = {
   init: (scene: THREE.Scene, params: any) => {
     // 구현
   },
@@ -64,20 +76,24 @@ export default {
     // 구현
   },
 };
+
+export default effect;
 ```
 
-### 2. 메인 프로젝트의 관점
+### 2. `@kirakira/web`의 관점
 
 **알고 있는 것**:
-- ✅ 인터페이스만 (EffectModule)
+- ✅ `@kirakira/effect-sdk`의 `EffectModule` 인터페이스만
 - ❌ 효과의 내부 구현 (모름)
-- ❌ 효과의 타입 정의 (모름)
+- ❌ 효과별 커스텀 타입 (모름)
 
 **코드 예시**:
 ```typescript
-// 메인 프로젝트는 인터페이스만 사용
-const { module } = await EffectLoader.loadEffect('gnParticles');
-// module의 타입은 EffectModule 인터페이스로만 알 수 있음
+// apps/web은 effect-sdk 계약만 사용
+import type { EffectModule } from '@kirakira/effect-sdk';
+
+const module = await EffectLoader.loadEffect('gn-particles');
+// module의 타입은 EffectModule로만 알 수 있음
 const objects = module.init(scene, params);
 ```
 
@@ -87,7 +103,7 @@ const objects = module.init(scene, params);
 
 | 메트릭 | 값 | 평가 |
 |--------|-----|------|
-| **Afferent Coupling (Ca)** | 0 | ⭐⭐⭐⭐⭐ (효과 모듈이 메인 프로젝트에 의존하지 않음) |
+| **Afferent Coupling (Ca)** | 0 | ⭐⭐⭐⭐⭐ (효과 모듈이 apps/web에 의존하지 않음) |
 | **Efferent Coupling (Ce)** | 1 | ⭐⭐⭐⭐⭐ (Three.js만 의존) |
 | **Instability (I = Ce/(Ca+Ce))** | 1.0 | ⭐⭐⭐⭐⭐ (완전히 불안정 = 독립적) |
 | **Abstractness (A)** | 1.0 | ⭐⭐⭐⭐⭐ (인터페이스만 사용) |
@@ -102,7 +118,7 @@ const objects = module.init(scene, params);
 
 1. ✅ **다른 디렉토리에서 삽입**: 가능
 2. ✅ **Loose Coupling**: 완벽하게 구현됨
-3. ✅ **독립적 개발**: 메인 프로젝트를 몰라도 됨
+3. ✅ **독립적 개발**: `apps/web`을 몰라도 됨 (`@kirakira/effect-sdk`로 계약 공유)
 4. ✅ **독립적 배포**: npm 패키지로 배포 가능
 
 **현재 구조는 Plugin Architecture 패턴의 모범 사례입니다.**

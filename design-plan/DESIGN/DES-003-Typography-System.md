@@ -4,7 +4,11 @@
 Complete typography specification for the Kirakira project, including font stacks, size scales, and usage guidelines aligned with Gundam aesthetic research.
 
 ## Justification
-> **Why this document exists:** Defines typography hierarchy and effect-specific text styles. Ensures futuristic Gundam aesthetic through Orbitron/Exo 2 display fonts while maintaining readability with Inter for body text.
+> **Why this document exists:** Defines typography hierarchy for the Kirakira UI. **Premium Minimal** uses **Inter only** for all UI text (display = primary stack). Effect names in the 3D overlay use the same stack with semibold weight.
+
+> **Implementation (2026-06-19):** `apps/web/src/styles/variables.css` — `--font-family-display` aliases `--font-family-primary`. `apps/web/index.html` preloads Inter 400/500/600.
+
+**Source of truth:** `apps/web/src/styles/variables.css`, `apps/web/index.html`
 
 ---
 
@@ -14,27 +18,27 @@ Complete typography specification for the Kirakira project, including font stack
 
 | Purpose | Token | Stack |
 |---------|-------|-------|
-| Primary (UI) | `--font-primary` | `'Inter', 'Roboto', 'Noto Sans KR', system-ui, sans-serif` |
-| Display | `--font-display` | `'Orbitron', 'Exo 2', sans-serif` |
-| Monospace | `--font-mono` | `'JetBrains Mono', 'Fira Code', 'Roboto Mono', monospace` |
+| Primary (UI + display) | `--font-family-primary` | `'Inter', 'Noto Sans KR', system-ui, sans-serif` |
+| Display (alias) | `--font-family-display` | `var(--font-family-primary)` |
+| Monospace | `--font-family-mono` | `'JetBrains Mono', 'Fira Code', monospace` |
 
 ### 1.2 Font Loading
 
 ```html
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@300;400;500;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 ```
 
 ### 1.3 Font Purpose
 
 | Font | Usage |
 |------|-------|
-| **Inter** | Body text, UI labels, buttons |
-| **Orbitron** | Display titles, effect names, headers |
-| **Exo 2** | Alternative display, subheadings |
+| **Inter** | All UI text, headings, buttons, effect names |
 | **JetBrains Mono** | Code, technical data, parameters |
 | **Noto Sans KR** | Korean language support |
+
+> **Legacy note:** Research docs (RES-004) reference Orbitron for futuristic display; not loaded in the current web app.
 
 ---
 

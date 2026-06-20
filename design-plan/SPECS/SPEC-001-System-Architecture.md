@@ -9,21 +9,35 @@ Technical architecture specification for the Kirakira Gundam Effects project.
 
 | Layer | Technology | Version |
 |-------|------------|---------|
-| Build Tool | Vite | 5.x |
+| Build Tool | Vite | 7.x |
 | Framework | React | 18.x |
 | Language | TypeScript | 5.x |
-| 3D Rendering | Three.js | Latest |
-| Animation | Framer Motion | 11.x |
+| 3D Rendering | Three.js | 0.158+ |
+| Animation | Framer Motion | 10.x |
+| State Management | Zustand | 4.x |
 | Styling | Tailwind CSS + CSS Variables | 3.x |
-| Testing | Vitest | Latest |
+| Testing | Vitest | 3.x |
 
 ---
 
 ## 2. Project Structure
 
+See [ARCHITECTURE.md](../../ARCHITECTURE.md) for the full monorepo map.
+
 ```
-frontend/
-├── src/
+kirakira/
+├── packages/
+│   ├── contracts/     @kirakira/contracts   Shared DTOs
+│   └── catalog/       @kirakira/catalog     effects.json
+├── apps/
+│   ├── web/           @kirakira/web         React + Vite SPA
+│   └── api/           @kirakira/api         Express REST API
+```
+
+### Web app (`apps/web/src/`)
+
+```
+apps/web/src/
 │   ├── App.tsx                # Root component
 │   ├── main.tsx               # Entry point
 │   ├── vite-env.d.ts          # Vite type declarations
@@ -44,8 +58,9 @@ frontend/
 │   │       ├── PerformanceMonitor.tsx
 │   │       └── ToastContainer.tsx
 │   │
-│   ├── contexts/              # React Context providers
-│   │   └── UIContext.tsx
+│   ├── store/                 # Zustand state management
+│   │   ├── effectStore.ts     # Effect selection, params, loading
+│   │   └── uiStore.ts         # UI panels, theme, toasts, modals
 │   │
 │   ├── data/                  # Static data
 │   │   └── effects.json
@@ -62,8 +77,6 @@ frontend/
 │   │
 │   ├── services/              # API and external services
 │   │   └── effectService.ts
-│   │
-│   ├── store/                 # State management
 │   │
 │   ├── styles/                # Global styles
 │   │   ├── base.css
@@ -89,28 +102,29 @@ frontend/
 
 ```
 App
-├── UIProvider (Context)
-│   └── AppContent
-│       ├── ErrorBoundary
-│       │   ├── Header
-│       │   ├── InfoPanel
-│       │   ├── HelpPanel
-│       │   ├── PresetManager
-│       │   ├── ToastContainer
-│       │   └── Main
-│       │       ├── EffectLibrary (Sidebar)
-│       │       └── Content Area
-│       │           ├── EffectCanvas
-│       │           └── EffectControls
-│       └── PerformanceMonitor (DEV only)
+└── AppContent
+    ├── initializeUI() / cleanupUI() via useUIStore (on mount)
+    ├── ErrorBoundary
+    │   ├── Header
+    │   ├── InfoPanel
+    │   ├── HelpPanel
+    │   ├── PresetManager
+    │   ├── ToastContainer
+    │   └── Main
+    │       ├── EffectLibrary (Sidebar)
+    │       └── Content Area
+    │           ├── EffectCanvas
+    │           └── EffectControls
+    └── PerformanceMonitor (DEV only)
 ```
 
 ### 3.2 Component Responsibilities
 
 | Component | Responsibility |
 |-----------|----------------|
-| `App` | Root provider setup |
-| `UIProvider` | Global UI state management |
+| `App` | Root component; calls `useUIStore.initializeUI()` on mount |
+| `useUIStore` | Global UI state (panels, theme, toasts, modals) |
+| `useEffectStore` | Effect catalog, selection, parameters, load status |
 | `Header` | Navigation, branding |
 | `EffectLibrary` | Effect selection list |
 | `EffectCanvas` | Three.js renderer wrapper |
@@ -121,31 +135,31 @@ App
 
 ## 4. State Management
 
-### 4.1 UI Context
+State is managed with **Zustand** stores. Do not use React Context for application state.
+
+### 4.1 UI Store (`useUIStore`)
 
 ```typescript
 interface UIState {
+  isInfoPanelVisible: boolean;
   isLibraryVisible: boolean;
   isControlsVisible: boolean;
-  isInfoPanelOpen: boolean;
-  isHelpPanelOpen: boolean;
+  isFullscreen: boolean;
   isMobile: boolean;
-  selectedEffect: string | null;
-  effectParams: Record<string, EffectParam>;
-  toasts: Toast[];
+  theme: 'dark' | 'light' | 'high-contrast';
+  prefersReducedMotion: boolean;
+  glowEffects: boolean;
+  backgroundParticles: boolean;
 }
 ```
 
-### 4.2 Actions
+Key actions: `toggleInfoPanel`, `toggleLibrary`, `toggleControls`, `closeAllPanels`, `detectMobile`, `initializeUI`, `cleanupUI`, `showToast`, `openModal`.
 
-| Action | Payload | Description |
-|--------|---------|-------------|
-| `TOGGLE_LIBRARY` | none | Toggle sidebar visibility |
-| `TOGGLE_CONTROLS` | none | Toggle controls panel |
-| `SELECT_EFFECT` | effectId | Set active effect |
-| `UPDATE_PARAM` | { key, value } | Update effect parameter |
-| `ADD_TOAST` | Toast | Show notification |
-| `REMOVE_TOAST` | toastId | Dismiss notification |
+### 4.2 Effect Store (`useEffectStore`)
+
+Manages effect catalog loading, selected effect, current parameters, and load progress/error state.
+
+Key actions: `fetchEffects`, `selectEffect`, `updateParam`, `resetParams`.
 
 ---
 
@@ -195,7 +209,7 @@ const module = await EffectService.loadEffect('gn-particles');
          │
          ▼
 ┌─────────────────┐
-│  UIContext      │ → Centralized state
+│  useEffectStore │ → Effect selection, params
 └────────┬────────┘
          │
     ┌────┴────┐
@@ -204,6 +218,11 @@ const module = await EffectService.loadEffect('gn-particles');
 │Canvas │  │  Controls    │
 │(Three)│←→│  (React)     │
 └───────┘  └──────────────┘
+         ▲
+         │
+┌────────┴────────┐
+│   useUIStore    │ → Panels, theme, toasts
+└─────────────────┘
 ```
 
 ---

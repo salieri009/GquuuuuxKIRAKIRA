@@ -6,6 +6,10 @@ This document defines the complete color system for the Kirakira project, derive
 ## Justification
 > **Why this document exists:** Centralizes all color tokens for consistent UI implementation. Bridges research conclusions to actionable CSS variables, ensuring effects match their canonical Gundam colors.
 
+> **Implementation (2026-06-19):** Live UI tokens are defined in `apps/web/src/styles/variables.css` (**Premium Minimal**). Sections 1, 3–5, and 7 describe the **implemented chrome**. Section 2 retains **effect-specific** colors for 3D rendering (unchanged from research).
+
+**Source of truth:** `apps/web/src/styles/variables.css`
+
 ---
 
 ## 1. Core Color Palette
@@ -14,42 +18,43 @@ This document defines the complete color system for the Kirakira project, derive
 
 | Token | Hex | RGB | HSL | Usage |
 |-------|-----|-----|-----|-------|
-| `--color-primary-bg` | `#0A0A0A` | rgb(10, 10, 10) | hsl(0, 0%, 4%) | Main background |
-| `--color-secondary-bg` | `#121212` | rgb(18, 18, 18) | hsl(0, 0%, 7%) | Secondary areas |
-| `--color-tertiary-bg` | `#1E1E1E` | rgb(30, 30, 30) | hsl(0, 0%, 12%) | Panels, cards |
-| `--color-surface` | `#2A2A2A` | rgb(42, 42, 42) | hsl(0, 0%, 16%) | Elevated surfaces |
+| `--color-primary-bg` | `#0B0C0E` | rgb(11, 12, 14) | hsl(220, 9%, 5%) | Main background |
+| `--color-secondary-bg` | `#111318` | rgb(17, 19, 24) | hsl(225, 14%, 8%) | Secondary areas |
+| `--color-tertiary-bg` | `#181B22` | rgb(24, 27, 34) | hsl(222, 17%, 11%) | Panels, cards |
+| `--color-surface` | `#1E222A` | rgb(30, 34, 42) | hsl(220, 17%, 14%) | Elevated surfaces |
 
 ### 1.2 Accent Colors
 
 | Token | Hex | RGB | HSL | Usage |
 |-------|-----|-----|-----|-------|
-| `--color-primary-accent` | `#00FFFF` | rgb(0, 255, 255) | hsl(180, 100%, 50%) | Primary actions, links |
-| `--color-secondary-accent` | `#FF00FF` | rgb(255, 0, 255) | hsl(300, 100%, 50%) | Secondary emphasis |
-| `--color-tertiary-accent` | `#00FF88` | rgb(0, 255, 136) | hsl(152, 100%, 50%) | GN Particles, success |
-| `--color-warning` | `#FFD700` | rgb(255, 215, 0) | hsl(51, 100%, 50%) | Newtype, warnings |
-| `--color-danger` | `#FF4444` | rgb(255, 68, 68) | hsl(0, 100%, 63%) | Errors, Psycho Field |
-| `--color-success` | `#00FF88` | rgb(0, 255, 136) | hsl(152, 100%, 50%) | Success states |
-| `--color-info` | `#00A8FF` | rgb(0, 168, 255) | hsl(200, 100%, 50%) | Information |
+| `--color-primary-accent` | `#3D9A9A` | rgb(61, 154, 154) | hsl(180, 43%, 42%) | Primary actions, focus ring |
+| `--color-primary-accent-hover` | `#4DAEAE` | rgb(77, 174, 174) | hsl(180, 38%, 49%) | Primary hover |
+| `--color-secondary-accent` | `#6B7280` | rgb(107, 114, 128) | hsl(220, 9%, 46%) | Secondary emphasis (neutral) |
+| `--color-tertiary-accent` | `#3D9A9A` | rgb(61, 154, 154) | hsl(180, 43%, 42%) | Alias of primary accent |
+| `--color-warning` | `#D4A853` | rgb(212, 168, 83) | hsl(40, 58%, 58%) | Warnings |
+| `--color-danger` | `#E05C5C` | rgb(224, 92, 92) | hsl(0, 65%, 62%) | Errors |
+| `--color-success` | `#4CAF82` | rgb(76, 175, 130) | hsl(152, 35%, 49%) | Success states |
+| `--color-info` | `#5B8DEF` | rgb(91, 141, 239) | hsl(220, 82%, 65%) | Information |
 
 ### 1.3 Text Colors
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--color-text-primary` | `#FFFFFF` | Primary text |
-| `--color-text-secondary` | `#E0E0E0` | Secondary text |
-| `--color-text-muted` | `#999999` | Muted/disabled text |
-| `--color-text-disabled` | `#555555` | Disabled state |
-| `--color-text-accent` | `#00FFFF` | Linked/accent text |
-| `--color-text-inverse` | `#000000` | Text on light bg |
+| `--color-text-primary` | `#F4F4F5` | Primary text |
+| `--color-text-secondary` | `#A1A1AA` | Secondary text |
+| `--color-text-muted` | `#71717A` | Muted/disabled text |
+| `--color-text-disabled` | `#52525B` | Disabled state |
+| `--color-text-accent` | `var(--color-primary-accent)` | Linked/accent text |
+| `--color-text-inverse` | `#0B0C0E` | Text on accent backgrounds |
 
 ### 1.4 Border Colors
 
 | Token | Hex | Usage |
 |-------|-----|-------|
-| `--color-border-primary` | `#333333` | Default borders |
-| `--color-border-secondary` | `#444444` | Secondary borders |
-| `--color-border-accent` | `#00FFFF` | Active/focus borders |
-| `--color-border-hover` | `#555555` | Hover state |
+| `--color-border-primary` | `#2A2D34` | Default borders |
+| `--color-border-secondary` | `#353943` | Secondary borders |
+| `--color-border-accent` | `var(--color-primary-accent)` | Active/focus borders |
+| `--color-border-hover` | `#3F434C` | Hover state |
 
 ---
 
@@ -88,16 +93,14 @@ This document defines the complete color system for the Kirakira project, derive
 
 ---
 
-## 3. Glass Morphism
+## 3. Glass & Panel Surfaces
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--color-glass-bg` | `rgba(0, 255, 255, 0.08)` | Glass panel background |
-| `--color-glass-secondary` | `rgba(255, 0, 255, 0.06)` | Secondary glass |
-| `--color-panel-bg` | `rgba(18, 18, 18, 0.95)` | Solid panels |
-| `--color-modal-backdrop` | `rgba(0, 0, 0, 0.8)` | Modal overlay |
-| `--glass-blur` | `16px` | Backdrop blur amount |
-| `--glass-border-opacity` | `0.2` | Border transparency |
+| `--color-glass-bg` | `rgba(255, 255, 255, 0.04)` | Subtle glass tint |
+| `--color-glass-secondary` | `rgba(255, 255, 255, 0.02)` | Secondary glass |
+| `--color-panel-bg` | `rgba(17, 19, 24, 0.92)` | Header/panel background |
+| `--color-modal-backdrop` | `rgba(0, 0, 0, 0.72)` | Modal overlay |
 
 ---
 
@@ -106,34 +109,34 @@ This document defines the complete color system for the Kirakira project, derive
 ### 4.1 Accent Gradients
 
 ```css
---gradient-primary: linear-gradient(135deg, #00FFFF 0%, #FF00FF 100%);
---gradient-secondary: linear-gradient(135deg, #FF00FF 0%, #00FF88 100%);
---gradient-tertiary: linear-gradient(135deg, #00FF88 0%, #00FFFF 100%);
---gradient-warning: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
---gradient-danger: linear-gradient(135deg, #FF4444 0%, #CC0000 100%);
+--gradient-primary: linear-gradient(135deg, #3D9A9A 0%, #2D7A7A 100%);
+--gradient-secondary: linear-gradient(135deg, #1E222A 0%, #111318 100%);
+--gradient-tertiary: linear-gradient(135deg, #3D9A9A 0%, #5B8DEF 100%);
+--gradient-warning: linear-gradient(135deg, #D4A853 0%, #B8923F 100%);
+--gradient-danger: linear-gradient(135deg, #E05C5C 0%, #C04444 100%);
 ```
 
 ### 4.2 Surface Gradients
 
 ```css
---gradient-panel: linear-gradient(145deg, rgba(18, 18, 18, 0.98) 0%, rgba(10, 10, 10, 0.95) 100%);
---gradient-glass: linear-gradient(145deg, rgba(0, 255, 255, 0.1) 0%, rgba(255, 0, 255, 0.05) 100%);
---gradient-overlay: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.8) 100%);
+--gradient-panel: linear-gradient(180deg, #181B22 0%, #111318 100%);
+--gradient-glass: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+--gradient-overlay: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.75) 100%);
 ```
 
 ---
 
-## 5. Shadows & Glows
+## 5. Shadows
 
-### 5.1 Neon Glows
+### 5.1 Legacy neon token aliases (neutral in UI)
 
-| Token | Value |
-|-------|-------|
-| `--shadow-neon-cyan` | `0 0 20px rgba(0, 255, 255, 0.4)` |
-| `--shadow-neon-cyan-strong` | `0 0 30px rgba(0, 255, 255, 0.6), 0 0 60px rgba(0, 255, 255, 0.3)` |
-| `--shadow-neon-magenta` | `0 0 20px rgba(255, 0, 255, 0.4)` |
-| `--shadow-neon-magenta-strong` | `0 0 30px rgba(255, 0, 255, 0.6), 0 0 60px rgba(255, 0, 255, 0.3)` |
-| `--shadow-neon-green` | `0 0 20px rgba(0, 255, 136, 0.4)` |
+| Token | Value (implemented) |
+|-------|---------------------|
+| `--shadow-neon-cyan` | `0 0 0 1px rgba(61, 154, 154, 0.25)` |
+| `--shadow-neon-cyan-strong` | `0 4px 14px rgba(0, 0, 0, 0.35)` |
+| `--shadow-neon-magenta` | `var(--shadow-md)` |
+| `--shadow-neon-magenta-strong` | `var(--shadow-lg)` |
+| `--shadow-neon-green` | `var(--shadow-md)` |
 
 ### 5.2 Standard Shadows
 
@@ -148,8 +151,8 @@ This document defines the complete color system for the Kirakira project, derive
 
 | Token | Value |
 |-------|-------|
-| `--shadow-glass` | `0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)` |
-| `--shadow-panel` | `0 4px 20px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(0, 255, 255, 0.1)` |
+| `--shadow-glass` | `0 1px 0 rgba(255, 255, 255, 0.04) inset, var(--shadow-sm)` |
+| `--shadow-panel` | `var(--shadow-md)` |
 
 ---
 
@@ -191,11 +194,11 @@ This document defines the complete color system for the Kirakira project, derive
 ### 7.1 Do's
 - Use semantic color tokens, not raw hex values
 - Maintain 4.5:1 contrast ratio for text
-- Apply neon glows sparingly for emphasis
-- Use gradients for interactive elements
+- Use a **single UI accent** (`#3D9A9A`) for chrome; reserve bright effect colors for the 3D canvas (Section 2)
+- Prefer flat borders and neutral shadows over glow
 
 ### 7.2 Don'ts
-- Don't mix multiple neon colors in close proximity
+- Don't apply cyan/magenta neon gradients to chrome (legacy research palette)
 - Avoid pure white (#FFFFFF) for large text areas
 - Don't use accent colors for body text
-- Avoid transparency below 0.1 for glass effects
+- Don't enable `glowEffects` by default in UI (`uiStore` default: `false`)

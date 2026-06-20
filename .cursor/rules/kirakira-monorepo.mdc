@@ -1,0 +1,31 @@
+---
+description: Kirakira monorepo boundaries — overrides ponytail when they conflict.
+globs:
+alwaysApply: true
+---
+
+# Kirakira project constraints
+
+Interactive 3D Gundam effects viewer. Full agent workflow: [AGENTS.md](../../AGENTS.md).
+
+## Non-negotiable (not ponytail-deletable)
+
+- Catalog data only in `packages/catalog/effects.json`
+- Shared DTOs only in `@kirakira/contracts`; runtime contract in `@kirakira/effect-sdk`
+- No duplicate `Effect` / `ApiResponse` types in apps
+- Zustand stores only (`useUIStore`, `useEffectStore`) — no React Context for global state
+- Effect modules: `init` / `update` / `dispose` on `@kirakira/effect-sdk` contract
+- Three.js effects attach under R3F `effectHost` group; dispose via `detachAndDispose` in `particleUtils.ts`
+- Trust-boundary sanitizers (`shareUrl`, `presetValidation`, `paramSanitizer`, API CORS whitelist)
+- `npm run verify` must pass before done; keep tests that CI relies on
+
+## Ponytail-friendly defaults here
+
+- Prefer extending existing helpers (`particleUtils`, `effectLifecycle`) over new files
+- One effect file per catalog id under `apps/web/src/effects/examples/`
+- No new npm deps for UI widgets the platform already has (`<input type="color">`, native range, etc.)
+- Don't add layers between catalog JSON and `EffectModule` unless requested
+
+## Session harness
+
+Read `claude-progress.md` first; one `in_progress` item in `feature_list.json`; update evidence when shipping.

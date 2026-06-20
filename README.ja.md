@@ -30,7 +30,7 @@ Three.jsを使用して、ガンダムシリーズの象徴的な視覚効果を
 - **🎮 インタラクティブコントロール**: パラメータをリアルタイムで調整し、変化を観察
 - **📱 レスポンシブデザイン**: デスクトップとモバイルで最適化された体験
 - **🎨 未来的UI**: ガンダム美学からインスピレーションを得た洗練されたクリーンなデザイン
-- **⚡ 高性能**: Webpackコードスプリッティングによる最適化されたレンダリング
+- **⚡ 高性能**: Viteコードスプリッティングによる最適化されたレンダリング
 - **🌙 ダークテーマ**: ネオンアクセントカラーが適用された目に優しいダークテーマ
 - **♿ アクセシビリティ**: キーボードナビゲーションをサポートするWCAG 2.1 AA準拠
 
@@ -39,8 +39,8 @@ Three.jsを使用して、ガンダムシリーズの象徴的な視覚効果を
 ## 🎯 プロジェクト目標
 
 - ✅ Three.jsを使用したインタラクティブ3Dエフェクトの実装
-- ✅ Vue.js 3 Composition APIの活用能力の実証
-- ✅ MVCアーキテクチャパターンの適用
+- ✅ React 18 + TypeScriptの活用
+- ✅ Zustand状態管理を用いたレイヤードSPAアーキテクチャ
 - ✅ 直感的でモダンなユーザーインターフェースの作成
 - ✅ アクセシビリティ準拠の確保
 - ✅ パフォーマンスとユーザー体験の最適化
@@ -70,22 +70,20 @@ npm install
 
 3. **開発サーバーの起動**  
 ```bash
-npm run dev
+npm run dev          # web → http://localhost:5173
+npm run dev:api      # api → http://localhost:3001（任意）
 ```
 
 4. **アプリケーションへのアクセス**  
 ```
-http://localhost:8080
+http://localhost:5173
 ```
 
 ### ビルドとプレビュー
 
 ```bash
-# プロダクションビルド
-npm run build
-
-# プロダクションビルドのプレビュー
-npm run preview
+npm run build --workspace=@kirakira/web
+npm run preview --workspace=@kirakira/web
 ```
 
 ---
@@ -94,26 +92,22 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── frontend/
-│   └── src/
-│       ├── components/       # Reactコンポーネント
-│       │   ├── common/       # 共有コンポーネント
-│       │   ├── effects/      # 3Dエフェクトコンポーネント
-│       │   ├── layout/       # レイアウトコンポーネント
-│       │   └── ui/           # UIプリミティブ
-│       ├── contexts/         # React Contextプロバイダー
-│       ├── effects/          # Three.jsエフェクトモジュール
-│       ├── hooks/            # カスタムReactフック
-│       ├── services/         # APIサービス
-│       ├── styles/           # CSS変数＆グローバルスタイル
-│       └── data/             # 静的エフェクトデータ
+├── packages/
+│   ├── contracts/            # @kirakira/contracts — 共有DTO
+│   └── catalog/              # @kirakira/catalog — effects.json
+├── apps/
+│   ├── web/                  # @kirakira/web — React + Vite SPA
+│   │   └── src/
+│   │       ├── components/   # Reactコンポーネント
+│   │       ├── store/        # Zustand (uiStore, effectStore)
+│   │       ├── effects/      # Three.jsエフェクトモジュール
+│   │       ├── hooks/        # カスタムReactフック
+│   │       └── services/     # EffectService, apiClient
+│   └── api/                  # @kirakira/api — Express REST API
+├── ARCHITECTURE.md           # モノレポアーキテクチャ
+├── AGENTS.md                 # エージェントセッション指示
 ├── design-plan/              # デザイン仕様
-│   ├── DESIGN/               # UI/UXデザイン文書 (DES-001~008)
-│   ├── RESEARCH/             # ビジュアルリサーチ (RES-001~004)
-│   └── SPECS/                # 技術仕様 (SPEC-001~004)
-├── docs/                     # 開発ガイド
-└── vite.config.ts            # Vite設定
-└── webpack.config.js        # Webpack設定
+└── docs/                     # 開発ガイド
 ```
 
 ---
@@ -138,7 +132,8 @@ GundamKiraKIra/
 
 - **ESLint**: コード品質
 - **Prettier**: コードフォーマット
-- **Webpack Dev Server**: Hot Module Replacement
+- **Zustand**: グローバルUI・エフェクト状態
+- **Vitest**: ユニットテスト
 
 ---
 
@@ -206,14 +201,10 @@ GundamKiraKIra/
 ## 🧪 テスト
 
 ```bash
-# テスト実行
-npm run test
-
-# テストカバレッジ
-npm run test:coverage
-
-# E2Eテスト
-npm run test:e2e
+npm run verify
+npm run test --workspace=@kirakira/web -- --run
+npm run type-check --workspace=@kirakira/web
+npm run lint --workspace=@kirakira/web
 ```
 
 ---
@@ -227,7 +218,7 @@ npm run test:e2e
 
 ### コード標準
 
-- Vue.jsスタイルガイドに従う
+- React + TypeScript規約に従う（[AGENTS.md](AGENTS.md)参照）
 - ESLintとPrettierを使用
 - 意味のあるコミットメッセージを書く
 - 新機能にテストを追加

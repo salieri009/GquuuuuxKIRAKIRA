@@ -30,7 +30,7 @@ A modern web application that brings iconic visual effects from the Gundam serie
 - **🎮 Interactive Controls**: Adjust parameters in real-time and observe changes
 - **📱 Responsive Design**: Optimized experience on desktop and mobile
 - **🎨 Futuristic UI**: Sleek, clean design inspired by Gundam aesthetics
-- **⚡ High Performance**: Optimized rendering with Webpack code splitting
+- **⚡ High Performance**: Optimized rendering with Vite code splitting
 - **🌙 Dark Theme**: Eye-friendly dark theme with neon accents
 - **♿ Accessibility**: WCAG 2.1 AA compliant with keyboard navigation
 
@@ -39,8 +39,8 @@ A modern web application that brings iconic visual effects from the Gundam serie
 ## 🎯 Project Objectives
 
 - ✅ Implement interactive 3D effects using Three.js
-- ✅ Demonstrate Vue.js 3 Composition API proficiency
-- ✅ Apply MVC architecture patterns
+- ✅ Demonstrate React 18 + TypeScript proficiency
+- ✅ Apply layered SPA architecture with Zustand state management
 - ✅ Create intuitive and modern user interface
 - ✅ Ensure accessibility compliance
 - ✅ Optimize for performance and user experience
@@ -70,22 +70,20 @@ npm install
 
 3. **Run Development Server**  
 ```bash
-npm run dev
+npm run dev          # web → http://localhost:5173
+npm run dev:api      # api → http://localhost:3001 (optional)
 ```
 
 4. **Access the Application**  
 ```
-http://localhost:8080
+http://localhost:5173
 ```
 
 ### Build & Preview
 
 ```bash
-# Production build
-npm run build
-
-# Preview production build
-npm run preview
+npm run build --workspace=@kirakira/web
+npm run preview --workspace=@kirakira/web
 ```
 
 ---
@@ -94,25 +92,22 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── frontend/
-│   └── src/
-│       ├── components/       # React components
-│       │   ├── common/       # Shared components
-│       │   ├── effects/      # 3D effect components
-│       │   ├── layout/       # Layout components
-│       │   └── ui/           # UI primitives
-│       ├── contexts/         # React Context providers
-│       ├── effects/          # Three.js effect modules
-│       ├── hooks/            # Custom React hooks
-│       ├── services/         # API services
-│       ├── styles/           # CSS variables & global styles
-│       └── data/             # Static effect data
+├── packages/
+│   ├── contracts/            # @kirakira/contracts — shared DTOs
+│   └── catalog/              # @kirakira/catalog — effects.json
+├── apps/
+│   ├── web/                  # @kirakira/web — React + Vite SPA
+│   │   └── src/
+│   │       ├── components/   # React components
+│   │       ├── store/        # Zustand (uiStore, effectStore)
+│   │       ├── effects/      # Three.js effect modules
+│   │       ├── hooks/        # Custom React hooks
+│   │       └── services/     # EffectService, apiClient
+│   └── api/                  # @kirakira/api — Express REST API
+├── ARCHITECTURE.md           # Monorepo architecture
+├── AGENTS.md                 # Agent session instructions
 ├── design-plan/              # Design specifications
-│   ├── DESIGN/               # UI/UX design docs (DES-001~008)
-│   ├── RESEARCH/             # Visual research (RES-001~004)
-│   └── SPECS/                # Technical specs (SPEC-001~004)
-├── docs/                     # Development guides
-└── vite.config.ts            # Vite configuration
+└── docs/                     # Development guides
 ```
 
 ---
@@ -137,7 +132,8 @@ GundamKiraKIra/
 
 - **ESLint**: Code quality
 - **Prettier**: Code formatting
-- **Webpack Dev Server**: Hot module replacement
+- **Zustand**: Global UI and effect state
+- **Vitest**: Unit testing
 
 ---
 
@@ -205,14 +201,10 @@ GundamKiraKIra/
 ## 🧪 Testing
 
 ```bash
-# Run tests
-npm run test
-
-# Test coverage
-npm run test:coverage
-
-# E2E tests
-npm run test:e2e
+npm run verify                                    # full CI-equivalent check
+npm run test --workspace=@kirakira/web -- --run
+npm run type-check --workspace=@kirakira/web
+npm run lint --workspace=@kirakira/web
 ```
 
 ---
@@ -226,7 +218,7 @@ npm run test:e2e
 
 ### Code Standards
 
-- Follow Vue.js style guide
+- Follow React + TypeScript conventions (see [AGENTS.md](AGENTS.md))
 - Use ESLint and Prettier
 - Write meaningful commit messages
 - Add tests for new features
