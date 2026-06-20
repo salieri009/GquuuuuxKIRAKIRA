@@ -1,0 +1,19 @@
+{
+  "name": "@kirakira/catalog",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./effects.json": "./effects.json"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@kirakira/contracts": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3"
+  }
+}

@@ -30,7 +30,7 @@ Three.js를 활용하여 건담 시리즈의 상징적인 시각 효과를 실�
 - **🎮 인터랙티브 컨트롤**: 파라미터를 실시간으로 조정하며 변화 관찰
 - **📱 반응형 디자인**: 데스크탑과 모바일에서 최적화된 경험
 - **🎨 미래지향적 UI**: 건담 미학에서 영감을 받은 세련되고 깔끔한 디자인
-- **⚡ 고성능**: Webpack 코드 스플리팅을 통한 최적화된 렌더링
+- **⚡ 고성능**: Vite 코드 스플리팅을 통한 최적화된 렌더링
 - **🌙 다크 테마**: 네온 포인트 컬러가 적용된 눈에 편안한 다크 테마
 - **♿ 접근성**: 키보드 내비게이션을 지원하는 WCAG 2.1 AA 준수
 
@@ -39,8 +39,8 @@ Three.js를 활용하여 건담 시리즈의 상징적인 시각 효과를 실�
 ## 🎯 프로젝트 목표
 
 - ✅ Three.js를 활용한 인터랙티브 3D 효과 구현
-- ✅ Vue.js 3 Composition API 활용 능력 시연
-- ✅ MVC 아키텍처 패턴 적용
+- ✅ React 18 + TypeScript 활용 능력 시연
+- ✅ Zustand 상태 관리를 적용한 계층형 SPA 아키텍처
 - ✅ 직관적이고 현대적인 사용자 인터페이스 생성
 - ✅ 접근성 준수 보장
 - ✅ 성능과 사용자 경험 최적화
@@ -70,22 +70,20 @@ npm install
 
 3. **개발 서버 실행**  
 ```bash
-npm run dev
+npm run dev          # 웹 → http://localhost:5173
+npm run dev:api      # API → http://localhost:3001 (선택)
 ```
 
 4. **애플리케이션 접속**  
 ```
-http://localhost:8080
+http://localhost:5173
 ```
 
 ### 빌드 및 미리보기
 
 ```bash
-# 프로덕션 빌드
-npm run build
-
-# 프로덕션 빌드 미리보기
-npm run preview
+npm run build --workspace=@kirakira/web
+npm run preview --workspace=@kirakira/web
 ```
 
 ---
@@ -94,26 +92,22 @@ npm run preview
 
 ```
 GundamKiraKIra/
-├── frontend/
-│   └── src/
-│       ├── components/       # React 컴포넌트
-│       │   ├── common/       # 공유 컴포넌트
-│       │   ├── effects/      # 3D 효과 컴포넌트
-│       │   ├── layout/       # 레이아웃 컴포넌트
-│       │   └── ui/           # UI 프리미티브
-│       ├── contexts/         # React Context 프로바이더
-│       ├── effects/          # Three.js 효과 모듈
-│       ├── hooks/            # 커스텀 React 훅
-│       ├── services/         # API 서비스
-│       ├── styles/           # CSS 변수 & 전역 스타일
-│       └── data/             # 정적 효과 데이터
+├── packages/
+│   ├── contracts/            # @kirakira/contracts — 공유 DTO
+│   └── catalog/              # @kirakira/catalog — effects.json
+├── apps/
+│   ├── web/                  # @kirakira/web — React + Vite SPA
+│   │   └── src/
+│   │       ├── components/   # React 컴포넌트
+│   │       ├── store/        # Zustand (uiStore, effectStore)
+│   │       ├── effects/      # Three.js 효과 모듈
+│   │       ├── hooks/        # 커스텀 React 훅
+│   │       └── services/     # EffectService, apiClient
+│   └── api/                  # @kirakira/api — Express REST API
+├── ARCHITECTURE.md           # 모노레포 아키텍처
+├── AGENTS.md                 # 에이전트 세션 지침
 ├── design-plan/              # 디자인 명세
-│   ├── DESIGN/               # UI/UX 디자인 문서 (DES-001~008)
-│   ├── RESEARCH/             # 시각 자료조사 (RES-001~004)
-│   └── SPECS/                # 기술 명세 (SPEC-001~004)
-├── docs/                     # 개발 가이드
-└── vite.config.ts            # Vite 설정
-└── webpack.config.js        # Webpack 설정
+└── docs/                     # 개발 가이드
 ```
 
 ---
@@ -138,7 +132,8 @@ GundamKiraKIra/
 
 - **ESLint**: 코드 품질
 - **Prettier**: 코드 포맷팅
-- **Webpack Dev Server**: Hot Module Replacement
+- **Zustand**: 전역 UI 및 효과 상태
+- **Vitest**: 단위 테스트
 
 ---
 
@@ -206,14 +201,10 @@ GundamKiraKIra/
 ## 🧪 테스팅
 
 ```bash
-# 테스트 실행
-npm run test
-
-# 테스트 커버리지
-npm run test:coverage
-
-# E2E 테스트
-npm run test:e2e
+npm run verify
+npm run test --workspace=@kirakira/web -- --run
+npm run type-check --workspace=@kirakira/web
+npm run lint --workspace=@kirakira/web
 ```
 
 ---
@@ -227,7 +218,7 @@ npm run test:e2e
 
 ### 코드 표준
 
-- Vue.js 스타일 가이드 준수
+- React + TypeScript 컨벤션 준수 ([AGENTS.md](AGENTS.md) 참고)
 - ESLint 및 Prettier 사용
 - 의미 있는 커밋 메시지 작성
 - 새 기능에 대한 테스트 추가

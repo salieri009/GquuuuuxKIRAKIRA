@@ -1,0 +1,299 @@
+[
+  {
+    "id": "harness-core",
+    "priority": 1,
+    "area": "harness",
+    "title": "핵심 하네스 4종 + 확장 4종 도입",
+    "user_visible_behavior": "에이전트가 AGENTS.md, init scripts, progress log, feature tracker로 세션을 시작·종료할 수 있다",
+    "status": "passing",
+    "verification": [
+      "루트에 AGENTS.md, init.sh, init.ps1, claude-progress.md, feature_list.json 존재",
+      "루트에서 npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: All 8 harness files at repo root. 2026-06-19: Monorepo paths synced in harness files.",
+    "notes": "Complete"
+  },
+  {
+    "id": "doc-sync",
+    "priority": 2,
+    "area": "docs",
+    "title": "README/SPEC/실코드 동기화",
+    "user_visible_behavior": "README와 SPEC 문서가 React+Vite+Zustand 스택과 apps/web 경로를 정확히 반영한다",
+    "status": "passing",
+    "verification": [
+      "README.md, README.ko.md, README.ja.md에 Vue/Webpack/8080/test:e2e 참조 없음",
+      "설치 명령이 npm install (루트 workspaces)",
+      "SPEC-001이 useUIStore 아키텍처 반영",
+      "docs/effects/README.md 인덱스 생성"
+    ],
+    "evidence": "2026-06-19: README 3종, SPEC-001 updated for monorepo. docs/effects/README.md created.",
+    "notes": "Complete"
+  },
+  {
+    "id": "state-unify-ui",
+    "priority": 3,
+    "area": "state",
+    "title": "UIContext → useUIStore 통합",
+    "user_visible_behavior": "패널 토글·모바일 반응형이 Zustand 단일 경로로 동작한다",
+    "status": "passing",
+    "verification": [
+      "grep으로 UIContext import 0건",
+      "apps/web/src/App.tsx에 UIProvider 없음",
+      "npm run test --workspace=@kirakira/web -- --run && npm run build --workspace=@kirakira/web 통과"
+    ],
+    "evidence": "2026-06-19: App.tsx, InfoPanel.tsx, useResponsive.ts migrated. UIContext.tsx deleted. 62 tests pass.",
+    "notes": "Complete"
+  },
+  {
+    "id": "state-remove-legacy",
+    "priority": 4,
+    "area": "state",
+    "title": "EffectContext 및 contexts/ 정리",
+    "user_visible_behavior": "contexts/ 디렉터리가 제거되고 레거시 Context 코드가 없다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/contexts/ 디렉터리 없음",
+      "EffectContext import 0건",
+      "SPEC-001에서 contexts/ 참조 제거됨"
+    ],
+    "evidence": "2026-06-19: EffectContext.tsx and UIContext.tsx deleted. contexts/ directory removed.",
+    "notes": "Complete"
+  },
+  {
+    "id": "infra-ci",
+    "priority": 5,
+    "area": "infra",
+    "title": "Husky + lint-staged + GitHub Actions",
+    "user_visible_behavior": "커밋 전 lint-staged 실행; PR/push 시 CI가 workspaces 검증을 자동 실행한다",
+    "status": "passing",
+    "verification": [
+      ".husky/pre-commit 존재",
+      "apps/web/package.json에 lint-staged 설정",
+      ".github/workflows/ci.yml 존재",
+      "루트에서 npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: Root package.json + husky, .husky/pre-commit, lint-staged in apps/web/package.json, .github/workflows/ci.yml.",
+    "notes": "Complete"
+  },
+  {
+    "id": "cleanup-orphan",
+    "priority": 6,
+    "area": "cleanup",
+    "title": "루트 src/styles/ 제거, 깨진 doc 링크 수정",
+    "user_visible_behavior": "미사용 orphan 파일이 없고 문서 링크가 유효하다",
+    "status": "passing",
+    "verification": [
+      "루트 src/styles/ 디렉터리 없음",
+      "docs/effects 링크 유효"
+    ],
+    "evidence": "2026-06-19: Deleted root src/styles/*.css. docs/effects/README.md link fixed.",
+    "notes": "Complete"
+  },
+  {
+    "id": "test-baseline",
+    "priority": 7,
+    "area": "test",
+    "title": "핵심 hook/store 스모크 테스트 추가",
+    "user_visible_behavior": "uiStore와 useResponsive 회귀 테스트가 CI에 포함된다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/store/uiStore.test.ts 존재하고 통과",
+      "apps/web/src/hooks/useResponsive.test.ts 존재하고 통과",
+      "npm run test --workspace=@kirakira/web -- --run 전체 통과"
+    ],
+    "evidence": "2026-06-19: 62 tests pass including uiStore.test.ts (5) and useResponsive.test.ts (2).",
+    "notes": "Complete"
+  },
+  {
+    "id": "arch-effect-sdk",
+    "priority": 8,
+    "area": "architecture",
+    "title": "@kirakira/effect-sdk 패키지 분리",
+    "user_visible_behavior": "Three.js 효과 런타임 계약이 독립 패키지로 분리되어 web과 스크립트에서 공유된다",
+    "status": "passing",
+    "verification": [
+      "packages/effect-sdk/ 존재",
+      "apps/web이 @kirakira/effect-sdk에서 EffectModule import",
+      "apps/web/src/effects/types.ts 삭제됨",
+      "npm run type-check --workspace=@kirakira/effect-sdk 통과"
+    ],
+    "evidence": "2026-06-19: packages/effect-sdk with types + BaseEffect. Web migrated; types.ts removed. type-check passes.",
+    "notes": ""
+  },
+  {
+    "id": "arch-api-tests",
+    "priority": 9,
+    "area": "architecture",
+    "title": "API /api/effects 통합 테스트",
+    "user_visible_behavior": "CI에서 API health·effects 엔드포인트 계약이 자동 검증된다",
+    "status": "passing",
+    "verification": [
+      "apps/api/src/app.ts 분리",
+      "apps/api/src/routes/effects.test.ts 존재",
+      "GET /api/health, /api/effects, /api/effects/:id 테스트 통과",
+      "npm run verify에 api test 포함"
+    ],
+    "evidence": "2026-06-19: createApp() in app.ts; 4 supertest cases pass; verify + CI include api test.",
+    "notes": ""
+  },
+  {
+    "id": "arch-chunk-split",
+    "priority": 10,
+    "area": "architecture",
+    "title": "web Three.js 청크 분할",
+    "user_visible_behavior": "메인 JS 번들이 분리되어 Three.js/R3F가 별도 청크로 로드된다",
+    "status": "passing",
+    "verification": [
+      "EffectCanvas React.lazy + Suspense 적용",
+      "vite.config.ts manualChunks 설정",
+      "npm run build --workspace=@kirakira/web 통과",
+      "메인 JS 청크 500kB 미만"
+    ],
+    "evidence": "2026-06-19: lazy EffectCanvas; vendor-three + vendor-r3f chunks; main index.js 181kB.",
+    "notes": ""
+  },
+  {
+    "id": "effect-minovsky",
+    "priority": 11,
+    "area": "effects",
+    "title": "미노프스키 입자 구현",
+    "user_visible_behavior": "effects.json의 minovsky-particles 효과가 3D 뷰어에서 선택·렌더링된다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/effects/examples/minovskyParticles.ts 존재",
+      "loader toModuleName이 minovsky-particles → minovskyParticles 매핑",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: minovskyParticles.ts (density/turbulence/color/opacity). loader kebab→camelCase paths. verify OK.",
+    "notes": "Future milestone"
+  },
+  {
+    "id": "effect-newtype",
+    "priority": 12,
+    "area": "effects",
+    "title": "뉴타입 섬광 구현",
+    "user_visible_behavior": "newtype-flash 효과가 3D 뷰어에서 동작한다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/effects/examples/newtypeFlash.ts 존재",
+      "loader toModuleName이 newtype-flash → newtypeFlash 매핑",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: newtypeFlash.ts (intensity/ripples/color/frequency). Ring ripple + point light.",
+    "notes": ""
+  },
+  {
+    "id": "effect-psyco",
+    "priority": 13,
+    "area": "effects",
+    "title": "사이코 필드 구현",
+    "user_visible_behavior": "psyco-field 효과가 3D 뷰어에서 동작한다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/effects/examples/psycoField.ts 존재",
+      "loader toModuleName이 psyco-field → psycoField 매핑",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: psycoField.ts (fieldStrength/geometry/color/rotation). Icosahedron wireframe layers.",
+    "notes": ""
+  },
+  {
+    "id": "effect-transam",
+    "priority": 14,
+    "area": "effects",
+    "title": "트랜스 암 구현",
+    "user_visible_behavior": "trans-am 효과가 3D 뷰어에서 동작한다",
+    "status": "passing",
+    "verification": [
+      "apps/web/src/effects/examples/transAm.ts 존재",
+      "loader toModuleName이 trans-am → transAm 매핑",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: transAm.ts (power/heat/color/afterglow). Red particle burst + glow spheres.",
+    "notes": ""
+  },
+  {
+    "id": "ux-premium-minimal",
+    "priority": 15,
+    "area": "ux",
+    "title": "Premium Minimal UX refresh",
+    "user_visible_behavior": "UI가 neutral dark + 단일 accent, 절제된 모션·토스트, 단순화된 헤더로 표시된다",
+    "status": "passing",
+    "verification": [
+      "variables.css neutral tokens + tailwind.config.ts color mapping",
+      "NeonButton 사용처 Button으로 마이그레이션",
+      "uiStore glowEffects 기본 false, console.log 제거",
+      "Header 단순화 (Library/Controls + overflow menu)",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: Premium minimal tokens, Button migration, Header/App/EffectLibrary/Controls/Canvas/uiStore restyle.",
+    "notes": "3D effect colors unchanged; NeonButton.tsx retained as legacy CSS wrapper"
+  },
+  {
+    "id": "dev-validate-effect-flat",
+    "priority": 16,
+    "area": "dev",
+    "title": "validate-effect 플랫 .ts 모듈 지원",
+    "user_visible_behavior": "CLI가 examples/*.ts 단일 파일 경로로 효과 계약(init/update/dispose/export)을 검증한다",
+    "status": "passing",
+    "verification": [
+      "apps/web/scripts/validate-effect.ts가 .ts 파일 경로 직접 수용",
+      "5개 catalog effect 파일 validate-effect 통과",
+      "EffectCanvas exhaustive-deps lint 경고 0건",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19 iteration 10: flat .ts path in validate-effect; all 5 examples pass; EffectCanvas effectId deps; lint clean.",
+    "notes": ""
+  },
+  {
+    "id": "security-review-fixes",
+    "priority": 17,
+    "area": "security",
+    "title": "리뷰 보안·안정성 수정",
+    "user_visible_behavior": "API CORS가 화이트리스트 기반이고, 프리셋 import·공유 URL·localStorage 파싱이 검증된다",
+    "status": "passing",
+    "verification": [
+      "apps/api/src/lib/cors.ts + CORS_ORIGINS env",
+      "presetValidation + shareUrl + storage utils with tests",
+      "PresetManager inline delete confirm, import schema validation",
+      "applyShareUrlFromLocation in useEffectLoader",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: CORS whitelist; preset/share/storage hardening; effectStore log cleanup; web 76 + api 6 tests.",
+    "notes": ""
+  },
+  {
+    "id": "fix-updatebuffer-crash",
+    "priority": 18,
+    "area": "effects",
+    "title": "Three.js updateBuffer 크래시 수정",
+    "user_visible_behavior": "6개 효과 첫 로드·전환·연속 전환 시 콘솔 uncaught TypeError 없이 정상 렌더",
+    "status": "passing",
+    "verification": [
+      "safeDisposeEffectRoot + deferGpuDispose 일원화 (particleUtils.ts)",
+      "EffectCanvas hostReady callback ref + swappingRef + commitEffectLoad",
+      "6개 effect dispose/update 가드 통일",
+      "particleUtils deferred dispose + swap simulation tests",
+      "npm run verify 통과 (web 92 + api 6 tests)"
+    ],
+    "evidence": "2026-06-19: Multi-agent fix — safeDisposeEffectRoot, EffectCanvas lifecycle, 6 effects, 5 new tests; docs/debug/updateBuffer-crash-baseline.md.",
+    "notes": "DEV diagnostics in effectCanvasDiagnostics.ts (import.meta.env.DEV only)"
+  },
+  {
+    "id": "ponytail-effect-split",
+    "priority": 19,
+    "area": "effects",
+    "title": "Ponytail effect 모듈 분리 (catalog-id 디렉터리)",
+    "user_visible_behavior": "효과가 examples/<catalog-id>/index.ts + effect.ts 구조로 로드되고 모듈 metadata export가 없다",
+    "status": "passing",
+    "verification": [
+      "6개 examples/<catalog-id>/ 디렉터리 존재",
+      "export const metadata 0건 (effect 모듈)",
+      "validate-effect 6 디렉터리 통과",
+      "loader catalog-id 경로 우선",
+      "npm run verify 통과"
+    ],
+    "evidence": "2026-06-19: flat camelCase .ts 제거; metadata → catalog only; docs/effects 동기화.",
+    "notes": "overnight ponytail loop 80회 — docs/refactor/ponytail-loop-state.json"
+  }
+]

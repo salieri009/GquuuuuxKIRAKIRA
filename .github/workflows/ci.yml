@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install workspaces
+        run: npm ci
+
+      - name: Type check all packages
+        run: npm run type-check --workspaces --if-present
+
+      - name: Lint web
+        run: npm run lint --workspace=@kirakira/web
+
+      - name: Test web
+        run: npm run test --workspace=@kirakira/web -- --run
+
+      - name: Test api
+        run: npm run test --workspace=@kirakira/api -- --run
+
+      - name: Build web
+        run: npm run build --workspace=@kirakira/web
+
+      - name: Build api
+        run: npm run build --workspace=@kirakira/api

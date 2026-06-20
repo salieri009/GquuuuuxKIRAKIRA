@@ -27,7 +27,7 @@ Create an interactive 3D web experience showcasing visual effects from the Gunda
 | Framework | React 18 + TypeScript |
 | 3D Library | Three.js |
 | Animation | Framer Motion |
-| State Management | React Context + Custom Hooks |
+| State Management | Zustand (uiStore, effectStore) |
 | Styling | CSS Variables + Tailwind CSS |
 
 ## 5. Design Philosophy

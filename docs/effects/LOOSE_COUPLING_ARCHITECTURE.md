@@ -2,7 +2,7 @@
 
 ## 📋 개요
 
-Kirakira 프로젝트는 **완전한 Loose Coupling** 구조를 제공하여, Three.js 효과 개발자가 메인 프로젝트와 독립적으로 효과를 개발할 수 있습니다.
+Kirakira 모노레포는 **완전한 Loose Coupling** 구조를 제공하여, Three.js 효과 개발자가 `apps/web`과 독립적으로 효과를 개발할 수 있습니다.
 
 ---
 
@@ -10,9 +10,12 @@ Kirakira 프로젝트는 **완전한 Loose Coupling** 구조를 제공하여, Th
 
 ### 1. **인터페이스 기반 설계** ⭐⭐⭐⭐⭐
 
-효과 모듈은 표준 인터페이스만 구현하면 됩니다:
+효과 모듈은 `@kirakira/effect-sdk`가 정의한 표준 인터페이스만 구현하면 됩니다:
 
 ```typescript
+// packages/effect-sdk — 런타임 계약
+import type { EffectModule, EffectObjects } from '@kirakira/effect-sdk';
+
 // 효과 개발자는 이 인터페이스만 알면 됨
 interface EffectModule {
   init: (scene: THREE.Scene, params: Record<string, any>) => EffectObjects;
@@ -22,14 +25,14 @@ interface EffectModule {
 ```
 
 **평가**: ✅ **완벽한 Loose Coupling**
-- 메인 프로젝트의 내부 구현을 알 필요 없음
-- 인터페이스만 구현하면 자동으로 통합됨
+- `apps/web` 내부 구현을 알 필요 없음
+- `@kirakira/effect-sdk` 인터페이스만 구현하면 자동으로 통합됨
 
 ### 2. **동적 로딩** ⭐⭐⭐⭐
 
 ```typescript
 // 런타임에 동적으로 로드
-const { module } = await EffectLoader.loadEffect('gnParticles', '/my-effects');
+const module = await EffectLoader.loadEffect('gn-particles', '/my-effects');
 ```
 
 **평가**: ✅ **Loose Coupling**
@@ -40,8 +43,9 @@ const { module } = await EffectLoader.loadEffect('gnParticles', '/my-effects');
 
 ```
 my-effects/              # 완전히 독립적인 디렉토리
-├── gnParticles/
-│   ├── index.ts         # 효과 구현
+├── gn-particles/
+│   ├── index.ts         # export { default } from './effect'
+│   └── effect.ts        # implementation + bindEffectModule (no export const metadata)
 │   ├── package.json     # 독립적인 의존성
 │   └── tsconfig.json     # 독립적인 설정
 └── manifest.json         # 효과 목록
@@ -54,19 +58,27 @@ my-effects/              # 완전히 독립적인 디렉토리
 
 ---
 
-## ⚠️ 현재 구조의 한계점
+## ✅ 타입 정의 독립화 (구현 완료)
 
-### 1. **타입 정의 의존성**
+### `@kirakira/effect-sdk` — 런타임 계약 패키지
 
-**현재 문제**:
+Three.js 효과의 **런타임 계약**(`EffectModule`, `EffectObjects`, `BaseEffect`)은 `packages/effect-sdk`에 분리되어 있습니다. `apps/web`과 외부 효과 개발자 모두 이 패키지만 의존하면 됩니다.
+
 ```typescript
-// 효과 개발자가 메인 프로젝트의 타입을 import해야 함
-import type { EffectModule, EffectObjects } from '@effects/types';
+// 효과 개발자: apps/web 없이 effect-sdk만 import
+import type { EffectModule, EffectObjects } from '@kirakira/effect-sdk';
+import * as THREE from 'three';
 ```
 
-**개선 방안**: 타입 정의를 별도 패키지로 분리하거나, 효과 개발자가 직접 타입을 정의할 수 있도록
+**카탈로그 DTO**(`Effect`, `EffectParameter`)는 별도 패키지 `@kirakira/contracts`에 있으며, 런타임 계약과 혼동하지 않도록 구분합니다.
 
-### 2. **Vite 동적 Import 제한**
+타입을 import하지 않아도 런타임 검증으로 동작 가능합니다. `EffectLoader`가 `init` / `update` / `dispose` 존재 여부를 검사합니다.
+
+---
+
+## ⚠️ 남은 한계점
+
+### **Vite 동적 Import 제한**
 
 **현재 문제**: Vite의 동적 import는 빌드 타임에 분석되므로, 완전히 외부 디렉토리의 모듈을 로드하기 어려울 수 있음
 
@@ -76,54 +88,32 @@ import type { EffectModule, EffectObjects } from '@effects/types';
 
 ---
 
-## 🎯 완전한 Loose Coupling을 위한 개선
+## 🎯 추가 개선 여지
 
-### 개선 1: 타입 정의 독립화
-
-효과 개발자가 타입을 직접 정의할 수 있도록:
-
-```typescript
-// my-effects/gnParticles/index.ts
-// 타입을 직접 정의 (메인 프로젝트 의존성 없음)
-interface MyEffectObjects {
-  particleSystem: THREE.Points;
-  geometry: THREE.BufferGeometry;
-  material: THREE.Material;
-}
-
-const myEffect = {
-  init(scene: THREE.Scene, params: Record<string, any>): MyEffectObjects {
-    // 구현
-  },
-  // ...
-};
-```
-
-### 개선 2: 인터페이스 검증 런타임화
+### 인터페이스 검증 런타임화 (부분 구현)
 
 컴파일 타임이 아닌 런타임에 인터페이스를 검증:
 
 ```typescript
-// EffectLoader가 런타임에 인터페이스 검증
-if (typeof module.init !== 'function') {
-  throw new Error('Invalid module: init method required');
+// apps/web/src/effects/loader.ts — normalizeEffectModule (런타임 검증)
+for (const method of EFFECT_LIFECYCLE_METHODS) {
+  if (typeof candidate[method] !== 'function') {
+    throw new Error(`Invalid effect module: ${effectId}. Module must have a '${method}' method.`);
+  }
 }
 ```
 
-### 개선 3: Manifest 기반 자동 등록
+`EffectLoader`는 `@effects/examples/<id>/index.ts`를 `importDefaultFromPaths`로 우선 시도합니다. default export가 없으면 다음 경로로 넘어갑니다. 모듈 캐시는 없으며 legacy `animate` alias도 지원하지 않습니다. 앱 레벨 캐시는 `EffectService.loadEffectModule`이 담당합니다.
 
-효과 개발자가 manifest만 작성하면 자동으로 등록:
+### Catalog vs manifest
+
+- **Kirakira app**: `packages/catalog/effects.json` is the catalog single source (names, params, thumbnails).
+- **Effect modules**: `examples/<catalog-id>/index.ts` + `effect.ts` — runtime only (`init` / `update` / `dispose`), no `export const metadata`.
+- **External `my-effects/`** (optional): `manifest.json` is a fallback for `EffectLoader.listEffects` only.
 
 ```json
-// my-effects/manifest.json
 {
-  "effects": [
-    {
-      "id": "gnParticles",
-      "path": "./gnParticles/index.ts",
-      "metadata": { ... }
-    }
-  ]
+  "effects": [{ "id": "gn-particles", "path": "./gn-particles/index.ts" }]
 }
 ```
 
@@ -133,25 +123,35 @@ if (typeof module.init !== 'function') {
 
 | 항목 | 현재 상태 | 목표 | 평가 |
 |------|----------|------|------|
-| **인터페이스 분리** | ✅ 완벽 | ✅ 완벽 | ⭐⭐⭐⭐⭐ |
-| **의존성 분리** | ⚠️ 타입 의존 | ✅ 완전 분리 | ⭐⭐⭐ |
+| **인터페이스 분리** | ✅ `@kirakira/effect-sdk` | ✅ 완벽 | ⭐⭐⭐⭐⭐ |
+| **의존성 분리** | ✅ effect-sdk 분리 | ✅ 완전 분리 | ⭐⭐⭐⭐⭐ |
 | **디렉토리 분리** | ✅ 완벽 | ✅ 완벽 | ⭐⭐⭐⭐⭐ |
 | **런타임 로딩** | ✅ 구현됨 | ✅ 구현됨 | ⭐⭐⭐⭐ |
-| **독립적 개발** | ⚠️ 부분적 | ✅ 완전 | ⭐⭐⭐ |
+| **독립적 개발** | ✅ effect-sdk로 가능 | ✅ 완전 | ⭐⭐⭐⭐⭐ |
 
-**전체 평가**: **4.0/5.0** ⭐⭐⭐⭐
+**전체 평가**: **4.8/5.0** ⭐⭐⭐⭐⭐
 
 ---
 
-## 🔧 즉시 개선 사항
+## 🔧 권장 사항
 
-### 1. 타입 정의를 선택적으로 만들기
+### 1. 타입은 `@kirakira/effect-sdk` 사용 (선택)
 
-효과 개발자가 타입을 import하지 않아도 되도록:
+```bash
+# 모노레포 루트에서 워크스페이스 의존성으로 연결
+npm install @kirakira/effect-sdk --workspace=my-effect-package
+```
+
+또는 외부 저장소에서는:
+
+```bash
+npm install @kirakira/effect-sdk
+```
+
+### 2. 타입 없이도 개발 가능
 
 ```typescript
-// EffectLoader가 타입을 자동으로 추론
-// 효과 개발자는 단순히 객체만 export하면 됨
+// EffectLoader가 런타임에 인터페이스 검증
 export default {
   init: (scene, params) => { /* ... */ },
   update: (objects, params, deltaTime) => { /* ... */ },
@@ -159,32 +159,24 @@ export default {
 };
 ```
 
-### 2. 타입 정의 패키지 분리
+### 3. 효과 개발 가이드
 
-```bash
-# 별도 npm 패키지로 분리
-npm install @kirakira/effect-types
-```
-
-### 3. 효과 개발 가이드 개선
-
-효과 개발자가 메인 프로젝트를 몰라도 개발할 수 있도록 문서화
+`docs/effects/STANDALONE_DEVELOPMENT.md` — `apps/web` 없이 독립 개발 절차
 
 ---
 
 ## ✅ 결론
 
-**현재 구조는 이미 상당히 Loose Coupling되어 있습니다:**
+**현재 구조는 Loose Coupling이 잘 구현되어 있습니다:**
 
 ✅ **잘 구현된 부분**:
-- 인터페이스 기반 설계
-- 동적 로딩
+- `@kirakira/effect-sdk` 기반 인터페이스 설계
+- 동적 로딩 (`apps/web/src/effects/loader.ts`)
 - 독립적인 디렉토리 구조
 - 런타임 검증
 
-⚠️ **개선 필요**:
-- 타입 정의 의존성 제거
-- 완전한 독립적 개발 환경
+⚠️ **남은 개선**:
+- Vite 외부 디렉토리 동적 import (개발·프로덕션 경로 설정)
 
-**30년차 엔지니어 관점**: 현재 구조는 **Plugin Architecture** 패턴을 잘 따르고 있으며, 대부분의 요구사항을 충족합니다. 타입 의존성만 해결하면 완벽한 Loose Coupling이 됩니다.
+**30년차 엔지니어 관점**: 모노레포에서 **Plugin Architecture** 패턴을 따르며, `effect-sdk`로 런타임 계약이 분리되어 효과 개발자가 `apps/web`을 몰라도 개발할 수 있습니다.
 

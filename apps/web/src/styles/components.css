@@ -1,0 +1,124 @@
+/* Glass Panel */
+.glass-panel {
+  background: var(--color-tertiary-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+/* Legacy neon-button — minimal ghost (prefer Button component) */
+.neon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.neon-button:hover:not(:disabled) {
+  background: var(--color-glass-bg);
+  border-color: var(--color-border-hover);
+  color: var(--color-text-primary);
+}
+
+.neon-button.secondary,
+.neon-button[class*='primary'] {
+  border-color: var(--color-primary-accent);
+  color: var(--color-primary-accent);
+  background: var(--color-primary-accent-muted);
+}
+
+.neon-button.ghost {
+  border-color: transparent;
+  background: transparent;
+}
+
+/* Slider */
+.neon-slider {
+  position: relative;
+  width: 100%;
+  height: 4px;
+  background: var(--color-border-primary);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.neon-slider-track {
+  height: 100%;
+  background: var(--color-primary-accent);
+  border-radius: var(--radius-full);
+  transition: width var(--transition-fast);
+}
+
+.neon-slider-thumb {
+  position: absolute;
+  top: -5px;
+  width: 14px;
+  height: 14px;
+  background: var(--color-text-primary);
+  border: 2px solid var(--color-primary-accent);
+  border-radius: 50%;
+  cursor: grab;
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.neon-slider-thumb:hover,
+.neon-slider-thumb:active {
+  transform: scale(1.1);
+  cursor: grabbing;
+}
+
+/* Effect card */
+.effect-card {
+  background: var(--color-secondary-bg);
+  border: 1px solid var(--color-border-primary);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.effect-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-primary-accent);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.effect-card:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-tertiary-bg);
+}
+
+.effect-card.active::before,
+.effect-card[data-selected='true']::before {
+  opacity: 1;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--color-border-primary);
+  border-top-color: var(--color-primary-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
