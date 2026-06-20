@@ -11,10 +11,14 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
       "@effects": path.resolve(__dirname, "./src/effects"),
     },
+    // 단일 three 인스턴스 보장 — 이펙트 모듈과 렌더러(@react-three/*)가
+    // 동일한 three 버전을 사용하도록 강제 (updateBuffer 크래시 방지)
+    dedupe: ["three", "@react-three/fiber", "@react-three/drei"],
   },
 
   optimizeDeps: {
     exclude: ["lucide-react"],
+    include: ["three"],
   },
 
   // 개발 서버 설정

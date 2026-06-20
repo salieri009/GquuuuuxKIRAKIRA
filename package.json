@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "husky": "^9.1.7"
+  },
+  "overrides": {
+    "three": "0.184.0"
   }
 }

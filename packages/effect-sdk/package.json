@@ -10,11 +10,11 @@
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
-    "three": "^0.158.0"
+    "three": ">=0.158.0"
   },
   "devDependencies": {
     "@types/three": "^0.179.0",
-    "three": "^0.158.0",
+    "three": "^0.184.0",
     "typescript": "^5.5.3"
   }
 }

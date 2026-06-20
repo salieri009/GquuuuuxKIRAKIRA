@@ -66,7 +66,9 @@ export default function EffectLibrary() {
   ]);
 
   const categories = useMemo(() => {
-    const cats = new Set(effects.map((e) => e.category));
+    const cats = new Set(
+      effects.map((e) => e.category).filter((c): c is string => Boolean(c)),
+    );
     return Array.from(cats);
   }, [effects]);
 
@@ -167,9 +169,9 @@ export default function EffectLibrary() {
                 key={category}
                 size="sm"
                 variant={filterCategory === category ? "secondary" : "ghost"}
-                onClick={() => setFilterCategory(category ?? null)}
+                onClick={() => setFilterCategory(category)}
               >
-                {categoryLabel(category ?? "")}
+                {categoryLabel(category)}
               </Button>
             ))}
           </div>
